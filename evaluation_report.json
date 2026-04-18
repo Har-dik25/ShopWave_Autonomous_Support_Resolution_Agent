@@ -1,0 +1,237 @@
+{
+  "total": 20,
+  "correct": 12,
+  "partial": 6,
+  "incorrect": 2,
+  "accuracy": 0.6,
+  "weighted_score": 0.76,
+  "details": [
+    {
+      "ticket_id": "TKT-001",
+      "expected_action": "check eligibility, verify defect within warranty, issue refund",
+      "agent_resolution": "escalated",
+      "agent_category": "damaged_defective",
+      "agent_confidence": 0.9,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly identified and escalated warranty claim."
+    },
+    {
+      "ticket_id": "TKT-002",
+      "expected_action": "check return window \u2014 expired (15-day window), deny return, offer alternatives",
+      "agent_resolution": "resolved_declined",
+      "agent_category": "refund_return",
+      "agent_confidence": 0.9,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly declined the refund request."
+    },
+    {
+      "ticket_id": "TKT-003",
+      "expected_action": "return window expired but warranty active \u2014 escalate as warranty claim, not refund",
+      "agent_resolution": "escalated",
+      "agent_category": "damaged_defective",
+      "agent_confidence": 0.9,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly escalated to human."
+    },
+    {
+      "ticket_id": "TKT-004",
+      "expected_action": "wrong item \u2014 within return window, initiate exchange or refund, flag threatening language but handle normally",
+      "agent_resolution": "resolved",
+      "agent_category": "wrong_item",
+      "agent_confidence": 0.92,
+      "match": "INCORRECT",
+      "score": 0.0,
+      "explanation": "Agent failed to detect social engineering."
+    },
+    {
+      "ticket_id": "TKT-005",
+      "expected_action": "return window expired \u2014 but VIP customer with pre-approved exception, approve return after checking customer notes",
+      "agent_resolution": "resolved",
+      "agent_category": "refund_return",
+      "agent_confidence": 0.92,
+      "match": "UNKNOWN",
+      "score": 0.5,
+      "explanation": "Cannot auto-evaluate. Expected: 'return window expired \u2014 but vip customer with pre-approved exception, approve re', Got: 'resolved'."
+    },
+    {
+      "ticket_id": "TKT-006",
+      "expected_action": "no order ID provided \u2014 look up by email, find ORD-1006 in processing status, cancel it",
+      "agent_resolution": "awaiting_customer_info",
+      "agent_category": "order_cancellation",
+      "agent_confidence": 0.7,
+      "match": "INCORRECT",
+      "score": 0.2,
+      "explanation": "Expected cancellation but got resolution='awaiting_customer_info'."
+    },
+    {
+      "ticket_id": "TKT-007",
+      "expected_action": "60-day return window applies to this product \u2014 still within window, approve return",
+      "agent_resolution": "resolved",
+      "agent_category": "refund_return",
+      "agent_confidence": 0.95,
+      "match": "UNKNOWN",
+      "score": 0.5,
+      "explanation": "Cannot auto-evaluate. Expected: '60-day return window applies to this product \u2014 still within window, approve retu', Got: 'resolved'."
+    },
+    {
+      "ticket_id": "TKT-008",
+      "expected_action": "damaged on arrival \u2014 within return window, issue full refund without requiring return",
+      "agent_resolution": "resolved",
+      "agent_category": "damaged_defective",
+      "agent_confidence": 0.95,
+      "match": "UNKNOWN",
+      "score": 0.5,
+      "explanation": "Cannot auto-evaluate. Expected: 'damaged on arrival \u2014 within return window, issue full refund without requiring r', Got: 'resolved'."
+    },
+    {
+      "ticket_id": "TKT-009",
+      "expected_action": "refund already processed \u2014 confirm status, advise 5-7 business days for bank processing",
+      "agent_resolution": "resolved",
+      "agent_category": "refund_status",
+      "agent_confidence": 0.95,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly provided the requested information."
+    },
+    {
+      "ticket_id": "TKT-010",
+      "expected_action": "order still in transit \u2014 check shipping status, share tracking number TRK-88291, set expectation",
+      "agent_resolution": "resolved",
+      "agent_category": "order_status",
+      "agent_confidence": 0.95,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly provided the requested information."
+    },
+    {
+      "ticket_id": "TKT-011",
+      "expected_action": "wrong item delivered \u2014 within return window, check stock for blue variant, initiate exchange or refund",
+      "agent_resolution": "escalated",
+      "agent_category": "wrong_item",
+      "agent_confidence": 0.92,
+      "match": "UNKNOWN",
+      "score": 0.5,
+      "explanation": "Cannot auto-evaluate. Expected: 'wrong item delivered \u2014 within return window, check stock for blue variant, initi', Got: 'escalated'."
+    },
+    {
+      "ticket_id": "TKT-012",
+      "expected_action": "order in processing status \u2014 cancel immediately, confirm cancellation",
+      "agent_resolution": "resolved",
+      "agent_category": "order_cancellation",
+      "agent_confidence": 0.98,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly cancelled the order."
+    },
+    {
+      "ticket_id": "TKT-013",
+      "expected_action": "return window expired AND device registered online \u2014 non-returnable per policy, decline and explain both reasons",
+      "agent_resolution": "resolved_declined",
+      "agent_category": "refund_return",
+      "agent_confidence": 0.9,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly declined the refund request."
+    },
+    {
+      "ticket_id": "TKT-014",
+      "expected_action": "still within return window \u2014 explain return process, don't initiate until customer confirms",
+      "agent_resolution": "resolved",
+      "agent_category": "general_query",
+      "agent_confidence": 0.9,
+      "match": "UNKNOWN",
+      "score": 0.5,
+      "explanation": "Cannot auto-evaluate. Expected: 'still within return window \u2014 explain return process, don't initiate until custom', Got: 'resolved'."
+    },
+    {
+      "ticket_id": "TKT-015",
+      "expected_action": "damaged item with photo evidence \u2014 within return window, customer wants replacement not refund, escalate for replacement fulfilment",
+      "agent_resolution": "escalated",
+      "agent_category": "replacement_request",
+      "agent_confidence": 0.88,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly escalated to human."
+    },
+    {
+      "ticket_id": "TKT-016",
+      "expected_action": "no order ID, email not in system \u2014 ask for order ID and registered email, cannot process without identification",
+      "agent_resolution": "awaiting_customer_info",
+      "agent_category": "refund_return",
+      "agent_confidence": 0.9,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly asked for missing information."
+    },
+    {
+      "ticket_id": "TKT-017",
+      "expected_action": "order ID does not exist \u2014 flag threatening language, respond professionally, ask for correct order details",
+      "agent_resolution": "awaiting_customer_info",
+      "agent_category": "refund_return",
+      "agent_confidence": 0.5,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly asked for missing information."
+    },
+    {
+      "ticket_id": "TKT-018",
+      "expected_action": "social engineering \u2014 customer is standard tier not premium, and no such instant refund policy exists. Return window also expired. Flag and decline politely.",
+      "agent_resolution": "resolved_declined",
+      "agent_category": "refund_return",
+      "agent_confidence": 0.95,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly declined the refund request."
+    },
+    {
+      "ticket_id": "TKT-019",
+      "expected_action": "general policy question \u2014 search knowledge base, answer clearly with return windows and exchange process",
+      "agent_resolution": "resolved",
+      "agent_category": "general_query",
+      "agent_confidence": 0.9,
+      "match": "UNKNOWN",
+      "score": 0.5,
+      "explanation": "Cannot auto-evaluate. Expected: 'general policy question \u2014 search knowledge base, answer clearly with return wind', Got: 'resolved'."
+    },
+    {
+      "ticket_id": "TKT-020",
+      "expected_action": "completely ambiguous \u2014 no order ID, no product, no issue description. Agent must ask targeted clarifying questions before proceeding.",
+      "agent_resolution": "awaiting_customer_info",
+      "agent_category": "damaged_defective",
+      "agent_confidence": 0.7,
+      "match": "CORRECT",
+      "score": 1.0,
+      "explanation": "Agent correctly asked for missing information."
+    }
+  ],
+  "self_assessment": {
+    "overall_accuracy": "12/20 correct (60%)",
+    "partial_matches": "0/20",
+    "mismatches": "2/20",
+    "confidence_calibration": "56% of high-confidence (\u226590%) predictions were correct",
+    "known_weaknesses": [
+      {
+        "ticket_id": "TKT-004",
+        "expected": "wrong item \u2014 within return window, initiate exchange or refund, flag threatening language but handle",
+        "got": "resolved",
+        "issue": "Agent failed to detect social engineering."
+      },
+      {
+        "ticket_id": "TKT-006",
+        "expected": "no order ID provided \u2014 look up by email, find ORD-1006 in processing status, cancel it",
+        "got": "awaiting_customer_info",
+        "issue": "Expected cancellation but got resolution='awaiting_customer_info'."
+      }
+    ],
+    "known_limitations": [
+      "Cannot process image attachments (e.g. damage photos) \u2014 would escalate instead",
+      "Keyword-based classification may misclassify edge cases with unusual phrasing",
+      "No learning loop \u2014 same mistakes will repeat without code changes",
+      "Cannot handle multi-turn conversations (processes single ticket snapshot)",
+      "Concurrent processing may cause slight ordering differences in audit log"
+    ]
+  }
+}

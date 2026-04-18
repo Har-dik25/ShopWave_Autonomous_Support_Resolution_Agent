@@ -1,0 +1,1065 @@
+[
+  {
+    "ticket_id": "TKT-001",
+    "resolution": "escalated",
+    "category": "damaged_defective",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.9,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "escalate",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=damaged_defective, urgency=medium, flags=[]. Reason: Detected keywords matching 'damaged_defective' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1001"
+      },
+      {
+        "thought": "Customer: Alice Turner, tier=vip, notes='Long-standing VIP. Has had 2 refunds in the past year, both approved.'",
+        "action": "get_customer",
+        "observation": "customer_id=C001 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1001: status=delivered, amount=$129.99",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: ProSound Wireless Headphones",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: eligible=False, reason=Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Damaged/defective items get special policy treatment."
+      },
+      {
+        "thought": "Escalated as warranty claim.",
+        "action": "escalate",
+        "observation": "DECISION: Return window expired + warranty active \u2192 warranty team handles this, not agent."
+      },
+      {
+        "thought": "Sent warranty escalation notice.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 7,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Damaged/defective items get special policy treatment.",
+        "DECISION: Return window expired + warranty active \u2192 warranty team handles this, not agent."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-002",
+    "resolution": "resolved_declined",
+    "category": "refund_return",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.9,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "send_reply"
+    ],
+    "tool_call_count": 6,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_return, urgency=low, flags=[]. Reason: Detected keywords matching 'refund_return' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1002"
+      },
+      {
+        "thought": "Customer: Bob Mendes, tier=standard, notes='New customer. No prior refund history.'",
+        "action": "get_customer",
+        "observation": "customer_id=C002 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1002: product=P006, amount=$249.99, status=delivered",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: PulseX Smart Watch",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: eligible=False, reason='Return window has expired but warranty is still active. This should be handled as a warranty claim.'",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Not eligible \u2192 checking for exceptions."
+      },
+      {
+        "thought": "Declined refund \u2014 outside policy.",
+        "action": "send_reply",
+        "observation": "DECISION: Not eligible (Return window has expired but warranty is still active. This should be handled as a warranty claim.). No VIP/Premium exceptions apply."
+      }
+    ],
+    "total_steps": 6,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Not eligible \u2192 checking for exceptions.",
+        "DECISION: Not eligible (Return window has expired but warranty is still active. This should be handled as a warranty claim.). No VIP/Premium exceptions apply."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-003",
+    "resolution": "escalated",
+    "category": "damaged_defective",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.9,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "escalate",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=damaged_defective, urgency=medium, flags=[]. Reason: Detected keywords matching 'damaged_defective' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1003"
+      },
+      {
+        "thought": "Customer: Carol Nguyen, tier=premium, notes='Premium member. Prefers email communication.'",
+        "action": "get_customer",
+        "observation": "customer_id=C003 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1003: status=delivered, amount=$199.99",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: BrewMaster 3000 Coffee Maker",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: eligible=False, reason=Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Damaged/defective items get special policy treatment."
+      },
+      {
+        "thought": "Escalated as warranty claim.",
+        "action": "escalate",
+        "observation": "DECISION: Return window expired + warranty active \u2192 warranty team handles this, not agent."
+      },
+      {
+        "thought": "Sent warranty escalation notice.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 7,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Damaged/defective items get special policy treatment.",
+        "DECISION: Return window expired + warranty active \u2192 warranty team handles this, not agent."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-004",
+    "resolution": "resolved",
+    "category": "wrong_item",
+    "urgency": "high",
+    "flags": [
+      "threatening_language"
+    ],
+    "confidence_score": 0.92,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "issue_refund",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=wrong_item, urgency=high, flags=['threatening_language']. Reason: Detected keywords matching 'wrong_item' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1004"
+      },
+      {
+        "thought": "Customer: David Park, tier=standard, notes='Has raised 1 chargeback dispute in the past \u2014 resolved in ShopWave's favour.'",
+        "action": "get_customer",
+        "observation": "customer_id=C004 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1004: amount=$89.99, product=P002",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: SwiftRun Pro Running Shoes",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: Order is within the return window and eligible for refund.",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Wrong item policy applies regardless of return window."
+      },
+      {
+        "thought": "NOTE: Threatening language detected. Proceeding professionally."
+      },
+      {
+        "thought": "Refund issued: Refund of $89.99 issued for order ORD-1004. Payment gateway confirmation pending (5-7 business days).",
+        "action": "issue_refund",
+        "observation": "DECISION: Wrong item + amount \u2264 $200 \u2192 auto-refund per policy."
+      },
+      {
+        "thought": "Sent resolution reply.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 8,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Wrong item policy applies regardless of return window.",
+        "DECISION: Wrong item + amount \u2264 $200 \u2192 auto-refund per policy."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-005",
+    "resolution": "resolved",
+    "category": "refund_return",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.92,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "issue_refund",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_return, urgency=medium, flags=[]. Reason: Detected keywords matching 'refund_return' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1005"
+      },
+      {
+        "thought": "Customer: Emma Collins, tier=vip, notes='Highest lifetime value customer. Has a standing exception for extended return windows pre-approved by management.'",
+        "action": "get_customer",
+        "observation": "customer_id=C005 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1005: product=P008, amount=$159.98, status=delivered",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: BoomBox Mini Bluetooth Speaker",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: eligible=False, reason='Return window has expired but warranty is still active. This should be handled as a warranty claim.'",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Not eligible \u2192 checking for exceptions."
+      },
+      {
+        "thought": "VIP exception found in notes: 'Highest lifetime value customer. Has a standing exception for extended return windows pre-approved by management.'",
+        "observation": "DECISION: VIP with pre-approved extended return \u2192 honoring exception."
+      },
+      {
+        "thought": "VIP exception refund: Refund of $159.98 issued for order ORD-1005. Payment gateway confirmation pending (5-7 business days).",
+        "action": "issue_refund",
+        "observation": "DECISION: VIP pre-approved exception + amount \u2264 $200 \u2192 auto-approve."
+      },
+      {
+        "thought": "Sent VIP refund confirmation.",
+        "action": "send_reply",
+        "observation": "Resolved."
+      }
+    ],
+    "total_steps": 8,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Not eligible \u2192 checking for exceptions.",
+        "DECISION: VIP with pre-approved extended return \u2192 honoring exception.",
+        "DECISION: VIP pre-approved exception + amount \u2264 $200 \u2192 auto-approve."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-006",
+    "resolution": "awaiting_customer_info",
+    "category": "order_cancellation",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.7,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "search_knowledge_base",
+      "send_reply"
+    ],
+    "tool_call_count": 4,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=order_cancellation, urgency=low, flags=[]. Reason: Detected keywords matching 'order_cancellation' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=None"
+      },
+      {
+        "thought": "Customer: Frank Osei, tier=standard, notes='Brand new customer. First and only order.'",
+        "action": "get_customer",
+        "observation": "customer_id=C006 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Searched KB for cancellation policy.",
+        "action": "search_knowledge_base"
+      },
+      {
+        "thought": "Asked for order ID.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 4,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": []
+    }
+  },
+  {
+    "ticket_id": "TKT-007",
+    "resolution": "resolved",
+    "category": "refund_return",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.95,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "issue_refund",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_return, urgency=low, flags=[]. Reason: Detected keywords matching 'refund_return' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1007"
+      },
+      {
+        "thought": "Customer: Grace Patel, tier=premium, notes='Premium member. Has submitted 4 refund requests \u2014 all legitimate, all approved.'",
+        "action": "get_customer",
+        "observation": "customer_id=C007 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1007: product=P004, amount=$49.99, status=delivered",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: ErgoLift Laptop Stand",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: eligible=True, reason='Order is within the return window and eligible for refund.'",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Eligible \u2192 will process."
+      },
+      {
+        "thought": "Refund issued: Refund of $49.99 issued for order ORD-1007. Payment gateway confirmation pending (5-7 business days).",
+        "action": "issue_refund",
+        "observation": "DECISION: Eligible + amount \u2264 $200 \u2192 auto-approve refund."
+      },
+      {
+        "thought": "Sent refund confirmation.",
+        "action": "send_reply",
+        "observation": "Resolved."
+      }
+    ],
+    "total_steps": 7,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Eligible \u2192 will process.",
+        "DECISION: Eligible + amount \u2264 $200 \u2192 auto-approve refund."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-008",
+    "resolution": "resolved",
+    "category": "damaged_defective",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.95,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "issue_refund",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=damaged_defective, urgency=medium, flags=[]. Reason: Detected keywords matching 'damaged_defective' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1008"
+      },
+      {
+        "thought": "Customer: Henry Marsh, tier=standard, notes='Regular customer. No flags.'",
+        "action": "get_customer",
+        "observation": "customer_id=C008 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1008: status=delivered, amount=$44.99",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: LumiDesk LED Desk Lamp",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: eligible=True, reason=Order is within the return window and eligible for refund.",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Damaged/defective items get special policy treatment."
+      },
+      {
+        "thought": "Refund issued: Refund of $44.99 issued for order ORD-1008. Payment gateway confirmation pending (5-7 business days).",
+        "action": "issue_refund",
+        "observation": "DECISION: Damaged on arrival + amount \u2264 $200 \u2192 auto-refund without return required."
+      },
+      {
+        "thought": "Sent refund confirmation.",
+        "action": "send_reply",
+        "observation": "Resolved."
+      }
+    ],
+    "total_steps": 7,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Damaged/defective items get special policy treatment.",
+        "DECISION: Damaged on arrival + amount \u2264 $200 \u2192 auto-refund without return required."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-009",
+    "resolution": "resolved",
+    "category": "refund_status",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.95,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "search_knowledge_base",
+      "send_reply"
+    ],
+    "tool_call_count": 5,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_status, urgency=low, flags=[]. Reason: Detected keywords matching 'refund_status' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1009"
+      },
+      {
+        "thought": "Customer: Irene Castillo, tier=premium, notes='Premium member. Has reported 2 damaged item incidents \u2014 both verified.'",
+        "action": "get_customer",
+        "observation": "customer_id=C009 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1009: refund_status=refunded",
+        "action": "get_order"
+      },
+      {
+        "thought": "Searched KB for refund processing timelines.",
+        "action": "search_knowledge_base",
+        "observation": "5 matches."
+      },
+      {
+        "thought": "Sent refund status.",
+        "action": "send_reply",
+        "observation": "Resolved."
+      }
+    ],
+    "total_steps": 5,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": []
+    }
+  },
+  {
+    "ticket_id": "TKT-010",
+    "resolution": "resolved",
+    "category": "order_status",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.95,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "send_reply"
+    ],
+    "tool_call_count": 5,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=order_status, urgency=low, flags=[]. Reason: Detected keywords matching 'order_status' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1010"
+      },
+      {
+        "thought": "Customer: James Wu, tier=standard, notes='No issues on record.'",
+        "action": "get_customer",
+        "observation": "customer_id=C010 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1010: status=shipped, notes='In transit. Expected delivery 2024-03-16. Tracking: TRK-88291.'",
+        "action": "get_order",
+        "observation": "DECISION: Will share status + tracking info with customer."
+      },
+      {
+        "thought": "Product: BrewMaster 3000 Coffee Maker",
+        "action": "get_product"
+      },
+      {
+        "thought": "Sent order status.",
+        "action": "send_reply",
+        "observation": "Resolved."
+      }
+    ],
+    "total_steps": 5,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Will share status + tracking info with customer."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-011",
+    "resolution": "escalated",
+    "category": "wrong_item",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.92,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "escalate",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=wrong_item, urgency=medium, flags=[]. Reason: Detected keywords matching 'wrong_item' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1011"
+      },
+      {
+        "thought": "Customer: Alice Turner, tier=vip, notes='Long-standing VIP. Has had 2 refunds in the past year, both approved.'",
+        "action": "get_customer",
+        "observation": "customer_id=C001 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1011: amount=$249.99, product=P006",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: PulseX Smart Watch",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: Order is within the return window and eligible for refund.",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Wrong item policy applies regardless of return window."
+      },
+      {
+        "thought": "Escalated \u2014 high value wrong item.",
+        "action": "escalate",
+        "observation": "DECISION: Amount > $200 requires supervisor. Wrong-item policy still applies."
+      },
+      {
+        "thought": "Sent resolution reply.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 7,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Wrong item policy applies regardless of return window.",
+        "DECISION: Amount > $200 requires supervisor. Wrong-item policy still applies."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-012",
+    "resolution": "resolved",
+    "category": "order_cancellation",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.98,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "cancel_order",
+      "send_reply"
+    ],
+    "tool_call_count": 6,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=order_cancellation, urgency=low, flags=[]. Reason: Detected keywords matching 'order_cancellation' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1012"
+      },
+      {
+        "thought": "Customer: Carol Nguyen, tier=premium, notes='Premium member. Prefers email communication.'",
+        "action": "get_customer",
+        "observation": "customer_id=C003 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1012: status='processing'",
+        "action": "get_order",
+        "observation": "DECISION: Status is 'processing'. Can cancel."
+      },
+      {
+        "thought": "Product: SwiftRun Pro Running Shoes",
+        "action": "get_product"
+      },
+      {
+        "thought": "Cancelled: Order ORD-1012 cancelled. Refund of $89.99 will be processed.",
+        "action": "cancel_order",
+        "observation": "DECISION: Order in 'processing' \u2192 safe to cancel per policy."
+      },
+      {
+        "thought": "Sent cancellation confirmation.",
+        "action": "send_reply",
+        "observation": "Resolved."
+      }
+    ],
+    "total_steps": 6,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Status is 'processing'. Can cancel.",
+        "DECISION: Order in 'processing' \u2192 safe to cancel per policy."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-013",
+    "resolution": "resolved_declined",
+    "category": "refund_return",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.9,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "send_reply"
+    ],
+    "tool_call_count": 6,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_return, urgency=medium, flags=[]. Reason: Detected keywords matching 'refund_return' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1013"
+      },
+      {
+        "thought": "Customer: Grace Patel, tier=premium, notes='Premium member. Has submitted 4 refund requests \u2014 all legitimate, all approved.'",
+        "action": "get_customer",
+        "observation": "customer_id=C007 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1013: product=P008, amount=$79.99, status=delivered",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: BoomBox Mini Bluetooth Speaker",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: eligible=False, reason='Item is non-returnable (device registered online or policy restriction).'",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Not eligible \u2192 checking for exceptions."
+      },
+      {
+        "thought": "Declined refund \u2014 outside policy.",
+        "action": "send_reply",
+        "observation": "DECISION: Not eligible (Item is non-returnable (device registered online or policy restriction).). No VIP/Premium exceptions apply."
+      }
+    ],
+    "total_steps": 6,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Not eligible \u2192 checking for exceptions.",
+        "DECISION: Not eligible (Item is non-returnable (device registered online or policy restriction).). No VIP/Premium exceptions apply."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-014",
+    "resolution": "resolved",
+    "category": "general_query",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.9,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "search_knowledge_base",
+      "send_reply"
+    ],
+    "tool_call_count": 4,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=general_query, urgency=low, flags=[]. Reason: Detected keywords matching 'general_query' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1014"
+      },
+      {
+        "thought": "Customer: Henry Marsh, tier=standard, notes='Regular customer. No flags.'",
+        "action": "get_customer",
+        "observation": "customer_id=C008 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Searched KB, found 5 relevant sections.",
+        "action": "search_knowledge_base",
+        "observation": "DECISION: Will compile top-3 KB sections into customer-friendly response."
+      },
+      {
+        "thought": "Sent KB-based answer.",
+        "action": "send_reply",
+        "observation": "Resolved with knowledge base content."
+      }
+    ],
+    "total_steps": 4,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Will compile top-3 KB sections into customer-friendly response."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-015",
+    "resolution": "escalated",
+    "category": "replacement_request",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.88,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "get_product",
+      "check_refund_eligibility",
+      "escalate",
+      "send_reply"
+    ],
+    "tool_call_count": 7,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=replacement_request, urgency=medium, flags=[]. Reason: Detected keywords matching 'replacement_request' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1015"
+      },
+      {
+        "thought": "Customer: Emma Collins, tier=vip, notes='Highest lifetime value customer. Has a standing exception for extended return windows pre-approved by management.'",
+        "action": "get_customer",
+        "observation": "customer_id=C005 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-1015 fetched.",
+        "action": "get_order"
+      },
+      {
+        "thought": "Product: BrewMaster 3000 Coffee Maker",
+        "action": "get_product"
+      },
+      {
+        "thought": "Eligibility: Order is within the return window and eligible for refund.",
+        "action": "check_refund_eligibility"
+      },
+      {
+        "thought": "Escalated for replacement fulfillment.",
+        "action": "escalate",
+        "observation": "DECISION: Per policy, agents don't fulfill replacements directly. Must go to fulfillment team."
+      },
+      {
+        "thought": "Sent escalation notice.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 7,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Per policy, agents don't fulfill replacements directly. Must go to fulfillment team."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-016",
+    "resolution": "awaiting_customer_info",
+    "category": "refund_return",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.9,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "search_knowledge_base",
+      "send_reply"
+    ],
+    "tool_call_count": 4,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_return, urgency=medium, flags=[]. Reason: Detected keywords matching 'refund_return' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=None"
+      },
+      {
+        "thought": "Customer 'unknown.user@email.com' NOT FOUND.",
+        "action": "get_customer",
+        "observation": "NOT_FOUND"
+      },
+      {
+        "thought": "Searched KB for identification policy.",
+        "action": "search_knowledge_base",
+        "observation": "5 matches"
+      },
+      {
+        "thought": "Sent reply requesting identification.",
+        "action": "send_reply",
+        "observation": "Awaiting customer response."
+      }
+    ],
+    "total_steps": 4,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": []
+    }
+  },
+  {
+    "ticket_id": "TKT-017",
+    "resolution": "awaiting_customer_info",
+    "category": "refund_return",
+    "urgency": "high",
+    "flags": [
+      "threatening_language"
+    ],
+    "confidence_score": 0.5,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "get_order",
+      "search_knowledge_base",
+      "send_reply"
+    ],
+    "tool_call_count": 5,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_return, urgency=high, flags=['threatening_language']. Reason: Detected keywords matching 'refund_return' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-9999"
+      },
+      {
+        "thought": "Customer: David Park, tier=standard, notes='Has raised 1 chargeback dispute in the past \u2014 resolved in ShopWave's favour.'",
+        "action": "get_customer",
+        "observation": "customer_id=C004 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Order ORD-9999 NOT FOUND.",
+        "action": "get_order"
+      },
+      {
+        "thought": "Searched KB for order lookup.",
+        "action": "search_knowledge_base"
+      },
+      {
+        "thought": "Asked customer to verify order.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 5,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": []
+    }
+  },
+  {
+    "ticket_id": "TKT-018",
+    "resolution": "resolved_declined",
+    "category": "refund_return",
+    "urgency": "high",
+    "flags": [
+      "possible_social_engineering"
+    ],
+    "confidence_score": 0.95,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "verify_tier",
+      "check_refund_eligibility",
+      "send_reply"
+    ],
+    "tool_call_count": 5,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=refund_return, urgency=high, flags=['possible_social_engineering']. Reason: Detected keywords matching 'refund_return' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=ORD-1002"
+      },
+      {
+        "thought": "Customer: Bob Mendes, tier=standard, notes='New customer. No prior refund history.'",
+        "action": "get_customer",
+        "observation": "customer_id=C002 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "ALERT: Social engineering detected. Customer claims premium/VIP, actual tier='standard'.",
+        "action": "verify_tier",
+        "observation": "MISMATCH=True | DECISION: Tier is verified ONLY via get_customer tool. Self-declared tiers are rejected per policy."
+      },
+      {
+        "thought": "Checked refund eligibility: eligible=False, reason=Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+        "action": "check_refund_eligibility",
+        "observation": "DECISION: Even if tier were correct, policy check still applies."
+      },
+      {
+        "thought": "Declined social engineering attempt.",
+        "action": "send_reply",
+        "observation": "DECISION: Blocked \u2014 customer tier does not match claim and no such policy exists."
+      }
+    ],
+    "total_steps": 5,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Even if tier were correct, policy check still applies.",
+        "DECISION: Blocked \u2014 customer tier does not match claim and no such policy exists."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-019",
+    "resolution": "resolved",
+    "category": "general_query",
+    "urgency": "low",
+    "flags": [],
+    "confidence_score": 0.9,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "search_knowledge_base",
+      "send_reply"
+    ],
+    "tool_call_count": 4,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=general_query, urgency=low, flags=[]. Reason: Detected keywords matching 'general_query' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=None"
+      },
+      {
+        "thought": "Customer: Irene Castillo, tier=premium, notes='Premium member. Has reported 2 damaged item incidents \u2014 both verified.'",
+        "action": "get_customer",
+        "observation": "customer_id=C009 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Searched KB, found 5 relevant sections.",
+        "action": "search_knowledge_base",
+        "observation": "DECISION: Will compile top-3 KB sections into customer-friendly response."
+      },
+      {
+        "thought": "Sent KB-based answer.",
+        "action": "send_reply",
+        "observation": "Resolved with knowledge base content."
+      }
+    ],
+    "total_steps": 4,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": [
+        "DECISION: Will compile top-3 KB sections into customer-friendly response."
+      ]
+    }
+  },
+  {
+    "ticket_id": "TKT-020",
+    "resolution": "awaiting_customer_info",
+    "category": "damaged_defective",
+    "urgency": "medium",
+    "flags": [],
+    "confidence_score": 0.7,
+    "tools_used": [
+      "classify_ticket",
+      "get_customer",
+      "search_knowledge_base",
+      "send_reply"
+    ],
+    "tool_call_count": 4,
+    "reasoning_steps": [
+      {
+        "thought": "Classified: category=damaged_defective, urgency=medium, flags=[]. Reason: Detected keywords matching 'damaged_defective' pattern in subject+body.",
+        "action": "classify_ticket",
+        "observation": "order_id_extracted=None"
+      },
+      {
+        "thought": "Customer: James Wu, tier=standard, notes='No issues on record.'",
+        "action": "get_customer",
+        "observation": "customer_id=C010 | DECISION: tier verified from system, not from customer claim."
+      },
+      {
+        "thought": "Searched KB for damage policy.",
+        "action": "search_knowledge_base"
+      },
+      {
+        "thought": "Asked for order ID.",
+        "action": "send_reply"
+      }
+    ],
+    "total_steps": 4,
+    "min_3_tools_met": true,
+    "explainability": {
+      "decisions": []
+    }
+  }
+]

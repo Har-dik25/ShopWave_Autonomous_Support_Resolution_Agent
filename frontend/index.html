@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ShopWave Autonomous Support Command Center — AI-powered ticket resolution with real-time neural reasoning streams.">
+    <title>ShopWave — Autonomous Support Command Center</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  </head>
+  <body class="cyber-bg">
+
+    <!-- Animated Background Elements -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-lines"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <div id="app" class="layout-wrapper">
+
+      <!-- Side Navigation -->
+      <nav class="sidebar">
+        <div class="brand">
+          <div class="brand-logo">SW</div>
+          <span class="brand-name">ShopWave</span>
+        </div>
+
+        <div class="nav-section">
+          <p class="section-label">Operations</p>
+          <ul class="nav-list">
+            <li class="nav-item active" data-view="dashboard" id="nav-dashboard">
+              <span class="nav-icon">📊</span>
+              <span class="nav-text">Command Center</span>
+            </li>
+            <li class="nav-item" data-view="tickets" id="nav-tickets">
+              <span class="nav-icon">🧬</span>
+              <span class="nav-text">Resolution Hub</span>
+            </li>
+            <li class="nav-item" data-view="analytics" id="nav-analytics">
+              <span class="nav-icon">📈</span>
+              <span class="nav-text">Pulse Analytics</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="section-label">Intelligence</p>
+          <ul class="nav-list">
+            <li class="nav-item" data-view="dashboard" id="nav-audit" style="pointer-events: none; opacity: 0.35;">
+              <span class="nav-icon">🛡️</span>
+              <span class="nav-text">Audit Trail</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="system-status">
+          <div class="status-card">
+            <div class="status-header">
+              <div class="status-led pulsed"></div>
+              <span>Agent Neural Net v4.2</span>
+            </div>
+            <div class="status-meter">
+              <div class="meter-fill" id="sys-meter" style="width: 92%"></div>
+            </div>
+            <p class="status-uptime">System Uptime: 99.99% • Latency: <span id="sys-latency">~42ms</span></p>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="top-nav">
+          <div class="page-title">
+            <h1 id="view-title">Command Center</h1>
+            <p id="view-subtitle">Autonomous Support Resolution OS</p>
+          </div>
+          <div class="actions">
+            <button id="run-sweep-btn" class="cyber-btn primary">
+              <span class="btn-text">⚡ LAUNCH AUTONOMOUS SWEEP</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="page-view active">
+
+          <!-- Progress Bar (hidden until sweep starts) -->
+          <div class="sweep-progress" id="sweep-progress">
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-info">
+              <span>Autonomous Resolution Sweep</span>
+              <span class="progress-count" id="progress-count">0 / 0</span>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-card glass-medium">
+              <label>THROUGHPUT</label>
+              <div class="value-row">
+                <span class="value" id="stat-total">--</span>
+                <span class="unit">tickets</span>
+              </div>
+              <canvas id="chart-mini-throughput"></canvas>
+            </div>
+            <div class="metric-card glass-medium cyber-green">
+              <label>AUTONOMOUS</label>
+              <div class="value-row">
+                <span class="value" id="stat-resolved">--</span>
+                <span class="unit" id="stat-autonomous-rate">--%</span>
+              </div>
+              <div class="sparkline green"></div>
+            </div>
+            <div class="metric-card glass-medium cyber-blue">
+              <label>ESCALATION</label>
+              <div class="value-row">
+                <span class="value" id="stat-escalated">--</span>
+                <span class="unit">handoffs</span>
+              </div>
+              <div class="sparkline blue"></div>
+            </div>
+            <div class="metric-card glass-medium cyber-purple">
+              <label>ACCURACY</label>
+              <div class="value-row">
+                <span class="value" id="stat-eval">--%</span>
+              </div>
+              <div class="energy-gauge">
+                <div class="gauge-fill" id="eval-progress"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-row">
+            <div class="panel glass-heavy flex-2">
+              <div class="panel-header">
+                <h3>Neural Reasoning Stream</h3>
+                <div class="live-badge">📡 LIVE</div>
+              </div>
+              <div class="reasoning-stream" id="reasoning-stream">
+                <div class="stream-placeholder">System initialized. Awaiting sweep command...</div>
+              </div>
+            </div>
+
+            <div class="panel glass-medium flex-1">
+              <div class="panel-header">
+                <h3>System Health</h3>
+              </div>
+              <div class="health-metrics">
+                <div class="health-item">
+                  <span>RESILIENCE (Auto-Recovery)</span>
+                  <div class="health-value success" id="res-recoveries">--/--</div>
+                </div>
+                <div class="health-item">
+                  <span>LATENCY (Avg/Call)</span>
+                  <div class="health-value" id="stat-latency">--ms</div>
+                </div>
+                <div class="health-item">
+                  <span>TOTAL TOOL CALLS</span>
+                  <div class="health-value" id="stat-tools">--</div>
+                </div>
+                <div class="chart-container">
+                  <canvas id="chart-health"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESOLUTION HUB VIEW -->
+        <div id="view-tickets" class="page-view">
+          <div class="hub-layout">
+            <div class="ticket-explorer glass-medium">
+              <div class="explorer-header">
+                <input type="text" placeholder="🔍  Filter by ID, category, or status..." class="glass-input" id="ticket-filter" />
+              </div>
+              <div class="ticket-scroller" id="ticket-list"></div>
+            </div>
+            <div class="ticket-inspector glass-heavy" id="ticket-inspector">
+               <div class="inspector-empty">Select a ticket to inspect the neural reasoning chain...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS VIEW -->
+        <div id="view-analytics" class="page-view">
+
+          <!-- KPI Summary Strip -->
+          <div class="analytics-kpi-strip" id="analytics-kpi-strip">
+            <div class="kpi-pill glass-medium">
+              <span class="kpi-icon">🎯</span>
+              <div class="kpi-data">
+                <span class="kpi-value" id="kpi-accuracy">--%</span>
+                <span class="kpi-label">Accuracy</span>
+              </div>
+            </div>
+            <div class="kpi-pill glass-medium">
+              <span class="kpi-icon">⚡</span>
+              <div class="kpi-data">
+                <span class="kpi-value" id="kpi-resolved">--</span>
+                <span class="kpi-label">Resolved</span>
+              </div>
+            </div>
+            <div class="kpi-pill glass-medium">
+              <span class="kpi-icon">⬆️</span>
+              <div class="kpi-data">
+                <span class="kpi-value" id="kpi-escalated">--</span>
+                <span class="kpi-label">Escalated</span>
+              </div>
+            </div>
+            <div class="kpi-pill glass-medium">
+              <span class="kpi-icon">📊</span>
+              <div class="kpi-data">
+                <span class="kpi-value" id="kpi-avg-conf">--%</span>
+                <span class="kpi-label">Avg Confidence</span>
+              </div>
+            </div>
+            <div class="kpi-pill glass-medium">
+              <span class="kpi-icon">🔧</span>
+              <div class="kpi-data">
+                <span class="kpi-value" id="kpi-tools">--</span>
+                <span class="kpi-label">Tool Calls</span>
+              </div>
+            </div>
+            <div class="kpi-pill glass-medium">
+              <span class="kpi-icon">🧠</span>
+              <div class="kpi-data">
+                <span class="kpi-value" id="kpi-avg-steps">--</span>
+                <span class="kpi-label">Avg Steps</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 1: Full-width Resolution Timeline -->
+          <div class="analytics-row-full">
+            <div class="chart-card glass-medium">
+              <div class="chart-card-header">
+                <h3>Resolution Timeline</h3>
+                <span class="chart-badge">Per-Ticket Confidence Trend</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-velocity"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Category Pulse + Resolution Outcomes -->
+          <div class="analytics-row-half">
+            <div class="chart-card glass-medium">
+              <div class="chart-card-header">
+                <h3>Category Pulse</h3>
+                <span class="chart-badge">Ticket Distribution</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-categories"></canvas>
+              </div>
+            </div>
+            <div class="chart-card glass-medium">
+              <div class="chart-card-header">
+                <h3>Resolution Outcomes</h3>
+                <span class="chart-badge">Status Breakdown</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-outcomes"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Confidence Distribution + Category Resolution Radar -->
+          <div class="analytics-row-half">
+            <div class="chart-card glass-medium">
+              <div class="chart-card-header">
+                <h3>Confidence Distribution</h3>
+                <span class="chart-badge">Score Histogram</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-confidence"></canvas>
+              </div>
+            </div>
+            <div class="chart-card glass-medium">
+              <div class="chart-card-header">
+                <h3>Category Performance Radar</h3>
+                <span class="chart-badge">Success Rate by Category</span>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-radar"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+      </main>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

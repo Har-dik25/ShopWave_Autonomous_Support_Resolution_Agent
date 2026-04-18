@@ -1,0 +1,2636 @@
+[
+  {
+    "timestamp": "2024-03-15T09:12:00Z",
+    "ticket_id": "TKT-001",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "alice.turner@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C001",
+        "name": "Alice Turner",
+        "email": "alice.turner@email.com",
+        "phone": "+1-415-555-0101",
+        "tier": "vip",
+        "member_since": "2019-03-12",
+        "total_orders": 47,
+        "total_spent": 6840.5,
+        "address": {
+          "street": "12 Maple Avenue",
+          "city": "San Francisco",
+          "state": "CA",
+          "zip": "94102"
+        },
+        "notes": "Long-standing VIP. Has had 2 refunds in the past year, both approved."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:12:00Z",
+    "ticket_id": "TKT-001",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1001"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1001",
+        "customer_id": "C001",
+        "product_id": "P001",
+        "quantity": 1,
+        "amount": 129.99,
+        "status": "delivered",
+        "order_date": "2024-02-10",
+        "delivery_date": "2024-02-14",
+        "return_deadline": "2024-03-15",
+        "refund_status": null,
+        "notes": "Delivered on time. No issues logged at delivery."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:12:00Z",
+    "ticket_id": "TKT-001",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P001"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P001",
+        "name": "ProSound Wireless Headphones",
+        "category": "electronics",
+        "price": 129.99,
+        "warranty_months": 12,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Return not accepted if seal is broken unless item is defective."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:12:00Z",
+    "ticket_id": "TKT-001",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1001"
+    },
+    "output": {
+      "success": true,
+      "eligible": false,
+      "reason": "Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+      "return_deadline": "2024-03-15",
+      "warranty_active": true,
+      "order": {
+        "order_id": "ORD-1001",
+        "customer_id": "C001",
+        "product_id": "P001",
+        "quantity": 1,
+        "amount": 129.99,
+        "status": "delivered",
+        "order_date": "2024-02-10",
+        "delivery_date": "2024-02-14",
+        "return_deadline": "2024-03-15",
+        "refund_status": null,
+        "notes": "Delivered on time. No issues logged at delivery."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:12:00Z",
+    "ticket_id": "TKT-001",
+    "tool": "escalate",
+    "inputs": {
+      "ticket_id": "TKT-001",
+      "summary": "WARRANTY CLAIM: ORD-1001 (ProSound Wireless Headphones). Customer: Alice Turner (vip). Return window expired, warranty active. Issue: Refund request for headphones Hi, I bought a pair of headphones la",
+      "priority": "medium"
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-001",
+      "escalated": true,
+      "summary": "WARRANTY CLAIM: ORD-1001 (ProSound Wireless Headphones). Customer: Alice Turner (vip). Return window expired, warranty active. Issue: Refund request for headphones Hi, I bought a pair of headphones last month but they stopped working after a week. Order number is ORD-1001. I'd like a full refund please.",
+      "priority": "medium",
+      "queue_position": 6,
+      "estimated_response": "< 8 hours",
+      "assigned_team": "tier2_support"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:12:00Z",
+    "ticket_id": "TKT-001",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-001",
+      "message_length": 265
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-001",
+      "message_sent": "Hi Alice,\n\nWe're sorry about your ProSound Wireless Headphones.\n\nWhile the return window has passed, your item is still under **warranty**. We've escalated to our warranty team who will review your claim within **2-3 business days**.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:00:00Z",
+    "ticket_id": "TKT-009",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "irene.castillo@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C009",
+        "name": "Irene Castillo",
+        "email": "irene.castillo@email.com",
+        "phone": "+1-713-555-0156",
+        "tier": "premium",
+        "member_since": "2021-02-10",
+        "total_orders": 28,
+        "total_spent": 3670.9,
+        "address": {
+          "street": "88 Rosewood Court",
+          "city": "Houston",
+          "state": "TX",
+          "zip": "77001"
+        },
+        "notes": "Premium member. Has reported 2 damaged item incidents \u2014 both verified."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:00:00Z",
+    "ticket_id": "TKT-009",
+    "tool": "get_order::failure",
+    "inputs": {
+      "attempt": 1,
+      "error_type": "ValueError",
+      "args_preview": "('ORD-1009',)"
+    },
+    "output": {
+      "success": false,
+      "error": "Cache-Status: HIT, Age: 3600s \u2014 serving stale data from CDN edge (order-svc cache invalidation lag)",
+      "error_type": "ValueError",
+      "will_retry": true,
+      "next_retry_in_ms": 50
+    },
+    "attempt": 1,
+    "latency_ms": 0.0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T11:05:00Z",
+    "ticket_id": "TKT-002",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "bob.mendes@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C002",
+        "name": "Bob Mendes",
+        "email": "bob.mendes@email.com",
+        "phone": "+1-212-555-0198",
+        "tier": "standard",
+        "member_since": "2023-10-05",
+        "total_orders": 3,
+        "total_spent": 210.0,
+        "address": {
+          "street": "88 Birch Street",
+          "city": "New York",
+          "state": "NY",
+          "zip": "10001"
+        },
+        "notes": "New customer. No prior refund history."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T11:05:00Z",
+    "ticket_id": "TKT-002",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1002"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1002",
+        "customer_id": "C002",
+        "product_id": "P006",
+        "quantity": 1,
+        "amount": 249.99,
+        "status": "delivered",
+        "order_date": "2024-03-01",
+        "delivery_date": "2024-03-04",
+        "return_deadline": "2024-03-19",
+        "refund_status": null,
+        "notes": "High-value item. 15-day return window applies."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T11:05:00Z",
+    "ticket_id": "TKT-002",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P006"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P006",
+        "name": "PulseX Smart Watch",
+        "category": "electronics",
+        "price": 249.99,
+        "warranty_months": 12,
+        "return_window_days": 15,
+        "returnable": true,
+        "notes": "Only 15-day return window due to high-value electronics policy. Warranty covers hardware defects."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T11:05:00Z",
+    "ticket_id": "TKT-002",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1002"
+    },
+    "output": {
+      "success": true,
+      "eligible": false,
+      "reason": "Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+      "return_deadline": "2024-03-19",
+      "warranty_active": true,
+      "order": {
+        "order_id": "ORD-1002",
+        "customer_id": "C002",
+        "product_id": "P006",
+        "quantity": 1,
+        "amount": 249.99,
+        "status": "delivered",
+        "order_date": "2024-03-01",
+        "delivery_date": "2024-03-04",
+        "return_deadline": "2024-03-19",
+        "refund_status": null,
+        "notes": "High-value item. 15-day return window applies."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T11:05:00Z",
+    "ticket_id": "TKT-002",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-002",
+      "message_length": 326
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-002",
+      "message_sent": "Hi Bob,\n\nWe've reviewed your request for order ORD-1002 (PulseX Smart Watch).\n\nUnfortunately, return window has expired but warranty is still active. this should be handled as a warranty claim.\n\nHowever, your item may still be under warranty. Let us know if you'd like to open a warranty claim.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T15:00:00Z",
+    "ticket_id": "TKT-010",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "james.wu@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C010",
+        "name": "James Wu",
+        "email": "james.wu@email.com",
+        "phone": "+1-858-555-0199",
+        "tier": "standard",
+        "member_since": "2023-03-28",
+        "total_orders": 6,
+        "total_spent": 430.15,
+        "address": {
+          "street": "40 Harbor View",
+          "city": "San Diego",
+          "state": "CA",
+          "zip": "92101"
+        },
+        "notes": "No issues on record."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T15:00:00Z",
+    "ticket_id": "TKT-010",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1010"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1010",
+        "customer_id": "C010",
+        "product_id": "P003",
+        "quantity": 1,
+        "amount": 199.99,
+        "status": "shipped",
+        "order_date": "2024-03-12",
+        "delivery_date": null,
+        "return_deadline": null,
+        "refund_status": null,
+        "notes": "In transit. Expected delivery 2024-03-16. Tracking: TRK-88291."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T15:00:00Z",
+    "ticket_id": "TKT-010",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P003"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P003",
+        "name": "BrewMaster 3000 Coffee Maker",
+        "category": "home_appliances",
+        "price": 199.99,
+        "warranty_months": 24,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Warranty covers manufacturing defects only. Does not cover user damage."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T15:00:00Z",
+    "ticket_id": "TKT-010",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-010",
+      "message_length": 263
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-010",
+      "message_sent": "Hi James,\n\nYour order ORD-1010 (BrewMaster 3000 Coffee Maker) is currently **in transit**.\n\n\ud83d\udce6 **Tracking Number:** TRK-88291\n\n\ud83d\udcc5 **Expected Delivery:** 2024-03-16\n\nIf it hasn't arrived by then, reach out again and we'll investigate.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "alice.turner@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C001",
+        "name": "Alice Turner",
+        "email": "alice.turner@email.com",
+        "phone": "+1-415-555-0101",
+        "tier": "vip",
+        "member_since": "2019-03-12",
+        "total_orders": 47,
+        "total_spent": 6840.5,
+        "address": {
+          "street": "12 Maple Avenue",
+          "city": "San Francisco",
+          "state": "CA",
+          "zip": "94102"
+        },
+        "notes": "Long-standing VIP. Has had 2 refunds in the past year, both approved."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1011"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1011",
+        "customer_id": "C001",
+        "product_id": "P006",
+        "quantity": 1,
+        "amount": 249.99,
+        "status": "delivered",
+        "order_date": "2024-03-08",
+        "delivery_date": "2024-03-11",
+        "return_deadline": "2024-03-26",
+        "refund_status": null,
+        "notes": "Customer reported receiving wrong colour variant. Correct order was Blue, received Black."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P006"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P006",
+        "name": "PulseX Smart Watch",
+        "category": "electronics",
+        "price": 249.99,
+        "warranty_months": 12,
+        "return_window_days": 15,
+        "returnable": true,
+        "notes": "Only 15-day return window due to high-value electronics policy. Warranty covers hardware defects."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1011"
+    },
+    "output": {
+      "success": true,
+      "eligible": true,
+      "reason": "Order is within the return window and eligible for refund.",
+      "return_deadline": "2024-03-26",
+      "amount": 249.99,
+      "order": {
+        "order_id": "ORD-1011",
+        "customer_id": "C001",
+        "product_id": "P006",
+        "quantity": 1,
+        "amount": 249.99,
+        "status": "delivered",
+        "order_date": "2024-03-08",
+        "delivery_date": "2024-03-11",
+        "return_deadline": "2024-03-26",
+        "refund_status": null,
+        "notes": "Customer reported receiving wrong colour variant. Correct order was Blue, received Black."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "escalate",
+    "inputs": {
+      "ticket_id": "TKT-011",
+      "summary": "Wrong item for ORD-1011 (PulseX Smart Watch). Amount $249.99 > $200. Customer: Alice Turner (vip). Needs exchange or refund.",
+      "priority": "high"
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-011",
+      "escalated": true,
+      "summary": "Wrong item for ORD-1011 (PulseX Smart Watch). Amount $249.99 > $200. Customer: Alice Turner (vip). Needs exchange or refund.",
+      "priority": "high",
+      "queue_position": 15,
+      "estimated_response": "< 2 hours",
+      "assigned_team": "supervisor_queue"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "send_reply::failure",
+    "inputs": {
+      "attempt": 1,
+      "error_type": "ConnectionError",
+      "args_preview": "('TKT-011', \"Hi Alice,\\n\\nWe sincerely apologize for sending the wrong item. Your case has been escalated to our specialist team who will arrange an exchange or refund. You'll hear back within 24 hour"
+    },
+    "output": {
+      "success": false,
+      "error": "ConnectionError: [Errno 111] Connection refused \u2014 notification-service.internal:443 is unreachable",
+      "error_type": "ConnectionError",
+      "will_retry": true,
+      "next_retry_in_ms": 50
+    },
+    "attempt": 1,
+    "latency_ms": 0.0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:30:00Z",
+    "ticket_id": "TKT-003",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "carol.nguyen@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C003",
+        "name": "Carol Nguyen",
+        "email": "carol.nguyen@email.com",
+        "phone": "+1-312-555-0143",
+        "tier": "premium",
+        "member_since": "2021-06-18",
+        "total_orders": 22,
+        "total_spent": 3120.75,
+        "address": {
+          "street": "45 Oak Lane",
+          "city": "Chicago",
+          "state": "IL",
+          "zip": "60601"
+        },
+        "notes": "Premium member. Prefers email communication."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:30:00Z",
+    "ticket_id": "TKT-003",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1003"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1003",
+        "customer_id": "C003",
+        "product_id": "P003",
+        "quantity": 1,
+        "amount": 199.99,
+        "status": "delivered",
+        "order_date": "2024-01-05",
+        "delivery_date": "2024-01-09",
+        "return_deadline": "2024-02-08",
+        "refund_status": null,
+        "notes": "Return window has expired. Warranty still active until 2026-01-09."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:30:00Z",
+    "ticket_id": "TKT-003",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P003"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P003",
+        "name": "BrewMaster 3000 Coffee Maker",
+        "category": "home_appliances",
+        "price": 199.99,
+        "warranty_months": 24,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Warranty covers manufacturing defects only. Does not cover user damage."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:30:00Z",
+    "ticket_id": "TKT-003",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1003"
+    },
+    "output": {
+      "success": true,
+      "eligible": false,
+      "reason": "Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+      "return_deadline": "2024-02-08",
+      "warranty_active": true,
+      "order": {
+        "order_id": "ORD-1003",
+        "customer_id": "C003",
+        "product_id": "P003",
+        "quantity": 1,
+        "amount": 199.99,
+        "status": "delivered",
+        "order_date": "2024-01-05",
+        "delivery_date": "2024-01-09",
+        "return_deadline": "2024-02-08",
+        "refund_status": null,
+        "notes": "Return window has expired. Warranty still active until 2026-01-09."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:30:00Z",
+    "ticket_id": "TKT-003",
+    "tool": "escalate",
+    "inputs": {
+      "ticket_id": "TKT-003",
+      "summary": "WARRANTY CLAIM: ORD-1003 (BrewMaster 3000 Coffee Maker). Customer: Carol Nguyen (premium). Return window expired, warranty active. Issue: Coffee maker stopped working My BrewMaster coffee maker (ORD-1",
+      "priority": "medium"
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-003",
+      "escalated": true,
+      "summary": "WARRANTY CLAIM: ORD-1003 (BrewMaster 3000 Coffee Maker). Customer: Carol Nguyen (premium). Return window expired, warranty active. Issue: Coffee maker stopped working My BrewMaster coffee maker (ORD-1003) stopped heating water about 2 weeks ago. It's clearly a defect. I want a replacement or refund.",
+      "priority": "medium",
+      "queue_position": 4,
+      "estimated_response": "< 8 hours",
+      "assigned_team": "tier2_support"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:30:00Z",
+    "ticket_id": "TKT-003",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-003",
+      "message_length": 265
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-003",
+      "message_sent": "Hi Carol,\n\nWe're sorry about your BrewMaster 3000 Coffee Maker.\n\nWhile the return window has passed, your item is still under **warranty**. We've escalated to our warranty team who will review your claim within **2-3 business days**.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:00:00Z",
+    "ticket_id": "TKT-012",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "carol.nguyen@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C003",
+        "name": "Carol Nguyen",
+        "email": "carol.nguyen@email.com",
+        "phone": "+1-312-555-0143",
+        "tier": "premium",
+        "member_since": "2021-06-18",
+        "total_orders": 22,
+        "total_spent": 3120.75,
+        "address": {
+          "street": "45 Oak Lane",
+          "city": "Chicago",
+          "state": "IL",
+          "zip": "60601"
+        },
+        "notes": "Premium member. Prefers email communication."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:00:00Z",
+    "ticket_id": "TKT-012",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1012"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1012",
+        "customer_id": "C003",
+        "product_id": "P002",
+        "quantity": 1,
+        "amount": 89.99,
+        "status": "processing",
+        "order_date": "2024-03-14",
+        "delivery_date": null,
+        "return_deadline": null,
+        "refund_status": null,
+        "notes": "Order placed but not yet shipped. Customer can cancel free of charge."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:00:00Z",
+    "ticket_id": "TKT-012",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P002"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P002",
+        "name": "SwiftRun Pro Running Shoes",
+        "category": "footwear",
+        "price": 89.99,
+        "warranty_months": 0,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Must be unworn and in original packaging. No return if used outdoors."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:00:00Z",
+    "ticket_id": "TKT-012",
+    "tool": "cancel_order",
+    "inputs": {
+      "order_id": "ORD-1012"
+    },
+    "output": {
+      "success": true,
+      "message": "Order ORD-1012 cancelled. Refund of $89.99 will be processed.",
+      "order_id": "ORD-1012",
+      "refund_amount": 89.99,
+      "previous_status": "processing",
+      "new_status": "cancelled"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:00:00Z",
+    "ticket_id": "TKT-012",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-012",
+      "message_length": 198
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-012",
+      "message_sent": "Hi Carol,\n\nYour order ORD-1012 (SwiftRun Pro Running Shoes) has been **successfully cancelled**. \u2705\n\n\ud83d\udcb0 Refund of **$89.99** will be processed within 5\u20137 business days.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:00:00Z",
+    "ticket_id": "TKT-013",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "grace.patel@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C007",
+        "name": "Grace Patel",
+        "email": "grace.patel@email.com",
+        "phone": "+1-617-555-0134",
+        "tier": "premium",
+        "member_since": "2020-08-22",
+        "total_orders": 35,
+        "total_spent": 4890.0,
+        "address": {
+          "street": "56 Willow Way",
+          "city": "Boston",
+          "state": "MA",
+          "zip": "02101"
+        },
+        "notes": "Premium member. Has submitted 4 refund requests \u2014 all legitimate, all approved."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:00:00Z",
+    "ticket_id": "TKT-013",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1013"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1013",
+        "customer_id": "C007",
+        "product_id": "P008",
+        "quantity": 1,
+        "amount": 79.99,
+        "status": "delivered",
+        "order_date": "2024-01-20",
+        "delivery_date": "2024-01-24",
+        "return_deadline": "2024-02-23",
+        "refund_status": null,
+        "notes": "Return window expired. Device was registered online by customer on 2024-01-25. Non-returnable per policy."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:00:00Z",
+    "ticket_id": "TKT-013",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P008"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P008",
+        "name": "BoomBox Mini Bluetooth Speaker",
+        "category": "electronics",
+        "price": 79.99,
+        "warranty_months": 12,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Return not accepted if device has been registered online."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "david.park@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C004",
+        "name": "David Park",
+        "email": "david.park@email.com",
+        "phone": "+1-206-555-0177",
+        "tier": "standard",
+        "member_since": "2022-01-30",
+        "total_orders": 9,
+        "total_spent": 780.2,
+        "address": {
+          "street": "300 Pine Road",
+          "city": "Seattle",
+          "state": "WA",
+          "zip": "98101"
+        },
+        "notes": "Has raised 1 chargeback dispute in the past \u2014 resolved in ShopWave's favour."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:45:00Z",
+    "ticket_id": "TKT-005",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "emma.collins@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C005",
+        "name": "Emma Collins",
+        "email": "emma.collins@email.com",
+        "phone": "+1-512-555-0165",
+        "tier": "vip",
+        "member_since": "2018-11-02",
+        "total_orders": 91,
+        "total_spent": 14220.0,
+        "address": {
+          "street": "7 Sunset Blvd",
+          "city": "Austin",
+          "state": "TX",
+          "zip": "73301"
+        },
+        "notes": "Highest lifetime value customer. Has a standing exception for extended return windows pre-approved by management."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:45:00Z",
+    "ticket_id": "TKT-005",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1005"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1005",
+        "customer_id": "C005",
+        "product_id": "P008",
+        "quantity": 2,
+        "amount": 159.98,
+        "status": "delivered",
+        "order_date": "2023-12-15",
+        "delivery_date": "2023-12-19",
+        "return_deadline": "2024-01-18",
+        "refund_status": null,
+        "notes": "Return window expired. VIP customer with pre-approved extended return exception on file."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:45:00Z",
+    "ticket_id": "TKT-005",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P008"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P008",
+        "name": "BoomBox Mini Bluetooth Speaker",
+        "category": "electronics",
+        "price": 79.99,
+        "warranty_months": 12,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Return not accepted if device has been registered online."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:45:00Z",
+    "ticket_id": "TKT-005",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1005"
+    },
+    "output": {
+      "success": true,
+      "eligible": false,
+      "reason": "Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+      "return_deadline": "2024-01-18",
+      "warranty_active": true,
+      "order": {
+        "order_id": "ORD-1005",
+        "customer_id": "C005",
+        "product_id": "P008",
+        "quantity": 2,
+        "amount": 159.98,
+        "status": "delivered",
+        "order_date": "2023-12-15",
+        "delivery_date": "2023-12-19",
+        "return_deadline": "2024-01-18",
+        "refund_status": null,
+        "notes": "Return window expired. VIP customer with pre-approved extended return exception on file."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:45:00Z",
+    "ticket_id": "TKT-005",
+    "tool": "issue_refund",
+    "inputs": {
+      "order_id": "ORD-1005",
+      "amount": 159.98,
+      "IRREVERSIBLE": true
+    },
+    "output": {
+      "success": true,
+      "message": "Refund of $159.98 issued for order ORD-1005. Payment gateway confirmation pending (5-7 business days).",
+      "refund_amount": 159.98,
+      "order_id": "ORD-1005",
+      "irreversible": true,
+      "payment_gateway": "stripe_mock",
+      "transaction_id": "TXN-66196"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T08:45:00Z",
+    "ticket_id": "TKT-005",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-005",
+      "message_length": 289
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-005",
+      "message_sent": "Hi Emma,\n\nAs a valued VIP member, we've approved your return for order ORD-1005 (BoomBox Mini Bluetooth Speaker) under your extended return privilege. \u2705\n\n\ud83d\udcb0 **Refund:** $159.98\n\ud83d\udcc5 **Expected:** 5\u20137 business days\n\nThank you for being a loyal ShopWave customer!\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T12:00:00Z",
+    "ticket_id": "TKT-014",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "henry.marsh@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C008",
+        "name": "Henry Marsh",
+        "email": "henry.marsh@email.com",
+        "phone": "+1-303-555-0188",
+        "tier": "standard",
+        "member_since": "2022-05-19",
+        "total_orders": 14,
+        "total_spent": 1120.6,
+        "address": {
+          "street": "210 Cedar Drive",
+          "city": "Denver",
+          "state": "CO",
+          "zip": "80201"
+        },
+        "notes": "Regular customer. No flags."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T12:00:00Z",
+    "ticket_id": "TKT-014",
+    "tool": "search_knowledge_base",
+    "inputs": {
+      "query": "Thinking about returning my watch I'm not sure yet but I might want to return my smart watch (ORD-10"
+    },
+    "output": {
+      "success": true,
+      "results": [
+        "### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.",
+        "### Coverage\n- Warranty covers **manufacturing defects only**.\n- Does not cover: physical damage caused by user, water damage, unauthorised modifications.\n\n### Warranty Periods by Category\n- Electronics (headphones, speakers, smart watches): 12 months from delivery date.\n- Home appliances (coffee makers, kitchen devices): 24 months from delivery date.\n- Electronics accessories: 6 months from delivery date.\n- Footwear and sports products: No warranty (covered only by return policy).\n\n### Warranty Claim Process\n- Customer must provide order ID and description of defect.\n- Agent should verify warranty period using order delivery date and product warranty duration.\n- Warranty claims are escalated to the warranty team \u2014 agents do not resolve warranty claims directly.\n- Resolution options: repair, replacement, or refund at ShopWave's discretion.",
+        "## 8. Common FAQs\n**Q: How long does a refund take?**\nA: Refunds are processed within 5\u20137 business days after approval. The time to appear in the customer's account depends on their bank.\n\n**Q: Can I return a product I've used?**\nA: Generally no. Products must be in original, unused condition. Exceptions apply for defective or damaged items.\n\n**Q: Can I get a refund without returning the item?**\nA: Only in cases of damage on arrival or manufacturing defect confirmed by the support team.\n\n**Q: What if I don't have my order number?**\nA: The agent can look up the order using the customer's registered email address.\n\n**Q: Do you offer free returns?**\nA: Yes, for wrong items delivered and damaged/defective items. Standard returns may incur a return shipping fee depending on the reason.\n\n**Q: Can I exchange instead of getting a refund?**\nA: Yes, subject to stock availability. See the Exchange Policy section above.",
+        "### Refund Eligibility\n- Refunds are only issued after eligibility is confirmed via the `check_refund_eligibility` tool.\n- Refunds are processed to the original payment method.\n- Standard processing time: **5\u20137 business days** after approval.\n- Refunds cannot be reversed once issued.\n\n### Partial Refunds\n- Partial refunds may be issued for items returned in non-original condition.\n- A restocking fee of 10% may apply to high-value electronics returned outside of 7 days.\n\n### Refund Exceptions by Customer Tier\n- **Standard**: Standard return and refund policy applies. No exceptions.\n- **Premium**: Agents may use judgment to approve borderline cases (e.g. 1\u20133 days outside return window). Requires supervisor note.\n- **VIP**: Extended leniency. Management pre-approvals may be on file. Always check customer notes before declining.",
+        "## 6. Customer Tiers & Privileges\n| Tier | Benefits |\n|---|---|\n| Standard | Standard policy. No exceptions. |\n| Premium | Agents can apply judgment for borderline cases. Priority queue. |\n| VIP | Highest leniency. Check customer notes for any pre-approvals. Dedicated support. |\n\n> **Important:** Customer tier is verified via the `get_customer` tool only. Customers cannot self-declare their tier. Any ticket where a customer claims a tier or privilege not verified in the system should be flagged."
+      ],
+      "match_count": 5,
+      "search_engine": "keyword_v2",
+      "index_freshness": "2024-03-15T00:00:00Z"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T12:00:00Z",
+    "ticket_id": "TKT-014",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-014",
+      "message_length": 3362
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-014",
+      "message_sent": "Hi Henry,\n\nGreat question! Here's what you need to know:\n\n### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.\n\n### Coverage\n- Warranty covers **manufacturing defects only**.\n- Does not cover: physical damage caused by user, water damage, unauthorised modifications.\n\n### Warranty Periods by Category\n- Electronics (headphones, speakers, smart watches): 12 months from delivery date.\n- Home appliances (coffee makers, kitchen devices): 24 months from delivery date.\n- Electronics accessories: 6 months from delivery date.\n- Footwear and sports products: No warranty (covered only by return policy).\n\n### Warranty Claim Process\n- Customer must provide order ID and description of defect.\n- Agent should verify warranty period using order delivery date and product warranty duration.\n- Warranty claims are escalated to the warranty team \u2014 agents do not resolve warranty claims directly.\n- Resolution options: repair, replacement, or refund at ShopWave's discretion.\n\n## 8. Common FAQs\n**Q: How long does a refund take?**\nA: Refunds are processed within 5\u20137 business days after approval. The time to appear in the customer's account depends on their bank.\n\n**Q: Can I return a product I've used?**\nA: Generally no. Products must be in original, unused condition. Exceptions apply for defective or damaged items.\n\n**Q: Can I get a refund without returning the item?**\nA: Only in cases of damage on arrival or manufacturing defect confirmed by the support team.\n\n**Q: What if I don't have my order number?**\nA: The agent can look up the order using the customer's registered email address.\n\n**Q: Do you offer free returns?**\nA: Yes, for wrong items delivered and damaged/defective items. Standard returns may incur a return shipping fee depending on the reason.\n\n**Q: Can I exchange instead of getting a refund?**\nA: Yes, subject to stock availability. See the Exchange Policy section above.\n\nIf you have any other questions, feel free to ask!\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:15:00Z",
+    "ticket_id": "TKT-015",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "emma.collins@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C005",
+        "name": "Emma Collins",
+        "email": "emma.collins@email.com",
+        "phone": "+1-512-555-0165",
+        "tier": "vip",
+        "member_since": "2018-11-02",
+        "total_orders": 91,
+        "total_spent": 14220.0,
+        "address": {
+          "street": "7 Sunset Blvd",
+          "city": "Austin",
+          "state": "TX",
+          "zip": "73301"
+        },
+        "notes": "Highest lifetime value customer. Has a standing exception for extended return windows pre-approved by management."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:15:00Z",
+    "ticket_id": "TKT-015",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1015"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1015",
+        "customer_id": "C005",
+        "product_id": "P003",
+        "quantity": 1,
+        "amount": 199.99,
+        "status": "delivered",
+        "order_date": "2024-02-18",
+        "delivery_date": "2024-02-22",
+        "return_deadline": "2024-03-23",
+        "refund_status": null,
+        "notes": "Item arrived with cracked water tank. Customer sent photo evidence."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:15:00Z",
+    "ticket_id": "TKT-015",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P003"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P003",
+        "name": "BrewMaster 3000 Coffee Maker",
+        "category": "home_appliances",
+        "price": 199.99,
+        "warranty_months": 24,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Warranty covers manufacturing defects only. Does not cover user damage."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:15:00Z",
+    "ticket_id": "TKT-015",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1015"
+    },
+    "output": {
+      "success": true,
+      "eligible": true,
+      "reason": "Order is within the return window and eligible for refund.",
+      "return_deadline": "2024-03-23",
+      "amount": 199.99,
+      "order": {
+        "order_id": "ORD-1015",
+        "customer_id": "C005",
+        "product_id": "P003",
+        "quantity": 1,
+        "amount": 199.99,
+        "status": "delivered",
+        "order_date": "2024-02-18",
+        "delivery_date": "2024-02-22",
+        "return_deadline": "2024-03-23",
+        "refund_status": null,
+        "notes": "Item arrived with cracked water tank. Customer sent photo evidence."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:15:00Z",
+    "ticket_id": "TKT-015",
+    "tool": "escalate",
+    "inputs": {
+      "ticket_id": "TKT-015",
+      "summary": "REPLACEMENT request (not refund) for ORD-1015 (BrewMaster 3000 Coffee Maker). Customer: Emma Collins (vip). Amount: $199.99. Reason: damaged/defective with photo evidence. Recommended: verify photos, ",
+      "priority": "medium"
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-015",
+      "escalated": true,
+      "summary": "REPLACEMENT request (not refund) for ORD-1015 (BrewMaster 3000 Coffee Maker). Customer: Emma Collins (vip). Amount: $199.99. Reason: damaged/defective with photo evidence. Recommended: verify photos, arrange replacement shipment.",
+      "priority": "medium",
+      "queue_position": 3,
+      "estimated_response": "< 8 hours",
+      "assigned_team": "tier2_support"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:15:00Z",
+    "ticket_id": "TKT-015",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-015",
+      "message_length": 299
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-015",
+      "message_sent": "Hi Emma,\n\nWe're sorry about the issue with your BrewMaster 3000 Coffee Maker (order ORD-1015).\n\nSince you'd prefer a replacement, we've escalated to our fulfillment team. They'll review the photos and arrange a replacement. Expect to hear back within **24-48 hours**.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:30:00Z",
+    "ticket_id": "TKT-016",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "unknown.user@email.com"
+    },
+    "output": {
+      "success": false,
+      "error": "NOT_FOUND: No customer account found for 'unknown.user@email.com'.",
+      "error_type": "NotFoundError"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:30:00Z",
+    "ticket_id": "TKT-016",
+    "tool": "search_knowledge_base",
+    "inputs": {
+      "query": "customer identification order lookup"
+    },
+    "output": {
+      "success": true,
+      "results": [
+        "### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.",
+        "### Refund Eligibility\n- Refunds are only issued after eligibility is confirmed via the `check_refund_eligibility` tool.\n- Refunds are processed to the original payment method.\n- Standard processing time: **5\u20137 business days** after approval.\n- Refunds cannot be reversed once issued.\n\n### Partial Refunds\n- Partial refunds may be issued for items returned in non-original condition.\n- A restocking fee of 10% may apply to high-value electronics returned outside of 7 days.\n\n### Refund Exceptions by Customer Tier\n- **Standard**: Standard return and refund policy applies. No exceptions.\n- **Premium**: Agents may use judgment to approve borderline cases (e.g. 1\u20133 days outside return window). Requires supervisor note.\n- **VIP**: Extended leniency. Management pre-approvals may be on file. Always check customer notes before declining.",
+        "### Coverage\n- Warranty covers **manufacturing defects only**.\n- Does not cover: physical damage caused by user, water damage, unauthorised modifications.\n\n### Warranty Periods by Category\n- Electronics (headphones, speakers, smart watches): 12 months from delivery date.\n- Home appliances (coffee makers, kitchen devices): 24 months from delivery date.\n- Electronics accessories: 6 months from delivery date.\n- Footwear and sports products: No warranty (covered only by return policy).\n\n### Warranty Claim Process\n- Customer must provide order ID and description of defect.\n- Agent should verify warranty period using order delivery date and product warranty duration.\n- Warranty claims are escalated to the warranty team \u2014 agents do not resolve warranty claims directly.\n- Resolution options: repair, replacement, or refund at ShopWave's discretion.",
+        "## 4. Order Cancellation Policy\n- Orders in **processing** status can be cancelled free of charge at any time before shipment.\n- Orders in **shipped** status cannot be cancelled \u2014 customer must wait for delivery and initiate a return.\n- Orders in **delivered** status cannot be cancelled.\n- Cancellations are confirmed via email within 1 hour.",
+        "## 6. Customer Tiers & Privileges\n| Tier | Benefits |\n|---|---|\n| Standard | Standard policy. No exceptions. |\n| Premium | Agents can apply judgment for borderline cases. Priority queue. |\n| VIP | Highest leniency. Check customer notes for any pre-approvals. Dedicated support. |\n\n> **Important:** Customer tier is verified via the `get_customer` tool only. Customers cannot self-declare their tier. Any ticket where a customer claims a tier or privilege not verified in the system should be flagged."
+      ],
+      "match_count": 5,
+      "search_engine": "keyword_v2",
+      "index_freshness": "2024-03-15T00:00:00Z"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T09:30:00Z",
+    "ticket_id": "TKT-016",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-016",
+      "message_length": 293
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-016",
+      "message_sent": "Hello,\n\nThank you for reaching out to ShopWave support.\n\nWe were unable to locate an account associated with unknown.user@email.com. To help resolve your issue, please provide:\n1. Your order ID (format: ORD-XXXX)\n2. The email address used when placing the order\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:45:00Z",
+    "ticket_id": "TKT-017",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "david.park@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C004",
+        "name": "David Park",
+        "email": "david.park@email.com",
+        "phone": "+1-206-555-0177",
+        "tier": "standard",
+        "member_since": "2022-01-30",
+        "total_orders": 9,
+        "total_spent": 780.2,
+        "address": {
+          "street": "300 Pine Road",
+          "city": "Seattle",
+          "state": "WA",
+          "zip": "98101"
+        },
+        "notes": "Has raised 1 chargeback dispute in the past \u2014 resolved in ShopWave's favour."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:45:00Z",
+    "ticket_id": "TKT-017",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-9999"
+    },
+    "output": {
+      "success": false,
+      "error": "NOT_FOUND: Order 'ORD-9999' does not exist in the system.",
+      "error_type": "NotFoundError"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:45:00Z",
+    "ticket_id": "TKT-017",
+    "tool": "search_knowledge_base",
+    "inputs": {
+      "query": "order lookup identification"
+    },
+    "output": {
+      "success": true,
+      "results": [
+        "### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.",
+        "### Refund Eligibility\n- Refunds are only issued after eligibility is confirmed via the `check_refund_eligibility` tool.\n- Refunds are processed to the original payment method.\n- Standard processing time: **5\u20137 business days** after approval.\n- Refunds cannot be reversed once issued.\n\n### Partial Refunds\n- Partial refunds may be issued for items returned in non-original condition.\n- A restocking fee of 10% may apply to high-value electronics returned outside of 7 days.\n\n### Refund Exceptions by Customer Tier\n- **Standard**: Standard return and refund policy applies. No exceptions.\n- **Premium**: Agents may use judgment to approve borderline cases (e.g. 1\u20133 days outside return window). Requires supervisor note.\n- **VIP**: Extended leniency. Management pre-approvals may be on file. Always check customer notes before declining.",
+        "### Coverage\n- Warranty covers **manufacturing defects only**.\n- Does not cover: physical damage caused by user, water damage, unauthorised modifications.\n\n### Warranty Periods by Category\n- Electronics (headphones, speakers, smart watches): 12 months from delivery date.\n- Home appliances (coffee makers, kitchen devices): 24 months from delivery date.\n- Electronics accessories: 6 months from delivery date.\n- Footwear and sports products: No warranty (covered only by return policy).\n\n### Warranty Claim Process\n- Customer must provide order ID and description of defect.\n- Agent should verify warranty period using order delivery date and product warranty duration.\n- Warranty claims are escalated to the warranty team \u2014 agents do not resolve warranty claims directly.\n- Resolution options: repair, replacement, or refund at ShopWave's discretion.",
+        "## 4. Order Cancellation Policy\n- Orders in **processing** status can be cancelled free of charge at any time before shipment.\n- Orders in **shipped** status cannot be cancelled \u2014 customer must wait for delivery and initiate a return.\n- Orders in **delivered** status cannot be cancelled.\n- Cancellations are confirmed via email within 1 hour.",
+        "## 6. Customer Tiers & Privileges\n| Tier | Benefits |\n|---|---|\n| Standard | Standard policy. No exceptions. |\n| Premium | Agents can apply judgment for borderline cases. Priority queue. |\n| VIP | Highest leniency. Check customer notes for any pre-approvals. Dedicated support. |\n\n> **Important:** Customer tier is verified via the `get_customer` tool only. Customers cannot self-declare their tier. Any ticket where a customer claims a tier or privilege not verified in the system should be flagged."
+      ],
+      "match_count": 5,
+      "search_engine": "keyword_v2",
+      "index_freshness": "2024-03-15T00:00:00Z"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:45:00Z",
+    "ticket_id": "TKT-017",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-017",
+      "message_length": 168
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-017",
+      "message_sent": "Hi David,\n\nWe understand your concern and take all issues seriously. We couldn't find order ORD-9999. Could you verify the order number?\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T13:00:00Z",
+    "ticket_id": "TKT-018",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "bob.mendes@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C002",
+        "name": "Bob Mendes",
+        "email": "bob.mendes@email.com",
+        "phone": "+1-212-555-0198",
+        "tier": "standard",
+        "member_since": "2023-10-05",
+        "total_orders": 3,
+        "total_spent": 210.0,
+        "address": {
+          "street": "88 Birch Street",
+          "city": "New York",
+          "state": "NY",
+          "zip": "10001"
+        },
+        "notes": "New customer. No prior refund history."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T13:00:00Z",
+    "ticket_id": "TKT-018",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1002"
+    },
+    "output": {
+      "success": true,
+      "eligible": false,
+      "reason": "Return window has expired but warranty is still active. This should be handled as a warranty claim.",
+      "return_deadline": "2024-03-19",
+      "warranty_active": true,
+      "order": {
+        "order_id": "ORD-1002",
+        "customer_id": "C002",
+        "product_id": "P006",
+        "quantity": 1,
+        "amount": 249.99,
+        "status": "delivered",
+        "order_date": "2024-03-01",
+        "delivery_date": "2024-03-04",
+        "return_deadline": "2024-03-19",
+        "refund_status": null,
+        "notes": "High-value item. 15-day return window applies."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-22T13:00:00Z",
+    "ticket_id": "TKT-018",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-018",
+      "message_length": 454
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-018",
+      "message_sent": "Hi Bob,\n\nThank you for contacting ShopWave support.\n\nWe've reviewed your account and your current membership tier is **Standard**. We don't have a policy for instant or question-free refunds for any tier.\n\nRegarding order ORD-1002: Return window has expired but warranty is still active. This should be handled as a warranty claim.\n\nIf you believe your account status is incorrect, please provide supporting documentation.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T16:00:00Z",
+    "ticket_id": "TKT-019",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "irene.castillo@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C009",
+        "name": "Irene Castillo",
+        "email": "irene.castillo@email.com",
+        "phone": "+1-713-555-0156",
+        "tier": "premium",
+        "member_since": "2021-02-10",
+        "total_orders": 28,
+        "total_spent": 3670.9,
+        "address": {
+          "street": "88 Rosewood Court",
+          "city": "Houston",
+          "state": "TX",
+          "zip": "77001"
+        },
+        "notes": "Premium member. Has reported 2 damaged item incidents \u2014 both verified."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T16:00:00Z",
+    "ticket_id": "TKT-019",
+    "tool": "search_knowledge_base",
+    "inputs": {
+      "query": "General question about returns Hello, what is your return policy for electronics? And do you offer e"
+    },
+    "output": {
+      "success": true,
+      "results": [
+        "## 8. Common FAQs\n**Q: How long does a refund take?**\nA: Refunds are processed within 5\u20137 business days after approval. The time to appear in the customer's account depends on their bank.\n\n**Q: Can I return a product I've used?**\nA: Generally no. Products must be in original, unused condition. Exceptions apply for defective or damaged items.\n\n**Q: Can I get a refund without returning the item?**\nA: Only in cases of damage on arrival or manufacturing defect confirmed by the support team.\n\n**Q: What if I don't have my order number?**\nA: The agent can look up the order using the customer's registered email address.\n\n**Q: Do you offer free returns?**\nA: Yes, for wrong items delivered and damaged/defective items. Standard returns may incur a return shipping fee depending on the reason.\n\n**Q: Can I exchange instead of getting a refund?**\nA: Yes, subject to stock availability. See the Exchange Policy section above.",
+        "### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.",
+        "### Refund Eligibility\n- Refunds are only issued after eligibility is confirmed via the `check_refund_eligibility` tool.\n- Refunds are processed to the original payment method.\n- Standard processing time: **5\u20137 business days** after approval.\n- Refunds cannot be reversed once issued.\n\n### Partial Refunds\n- Partial refunds may be issued for items returned in non-original condition.\n- A restocking fee of 10% may apply to high-value electronics returned outside of 7 days.\n\n### Refund Exceptions by Customer Tier\n- **Standard**: Standard return and refund policy applies. No exceptions.\n- **Premium**: Agents may use judgment to approve borderline cases (e.g. 1\u20133 days outside return window). Requires supervisor note.\n- **VIP**: Extended leniency. Management pre-approvals may be on file. Always check customer notes before declining.",
+        "## 5. Exchange Policy\n- Exchanges are available for wrong size, wrong colour, or wrong item delivered.\n- Exchange requests are fulfilled subject to stock availability.\n- If the desired item is unavailable, a full refund is offered instead.\n- Exchanges do not extend the original return window.",
+        "### Coverage\n- Warranty covers **manufacturing defects only**.\n- Does not cover: physical damage caused by user, water damage, unauthorised modifications.\n\n### Warranty Periods by Category\n- Electronics (headphones, speakers, smart watches): 12 months from delivery date.\n- Home appliances (coffee makers, kitchen devices): 24 months from delivery date.\n- Electronics accessories: 6 months from delivery date.\n- Footwear and sports products: No warranty (covered only by return policy).\n\n### Warranty Claim Process\n- Customer must provide order ID and description of defect.\n- Agent should verify warranty period using order delivery date and product warranty duration.\n- Warranty claims are escalated to the warranty team \u2014 agents do not resolve warranty claims directly.\n- Resolution options: repair, replacement, or refund at ShopWave's discretion."
+      ],
+      "match_count": 5,
+      "search_engine": "keyword_v2",
+      "index_freshness": "2024-03-15T00:00:00Z"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T16:00:00Z",
+    "ticket_id": "TKT-019",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-019",
+      "message_length": 3347
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-019",
+      "message_sent": "Hi Irene,\n\nGreat question! Here's what you need to know:\n\n## 8. Common FAQs\n**Q: How long does a refund take?**\nA: Refunds are processed within 5\u20137 business days after approval. The time to appear in the customer's account depends on their bank.\n\n**Q: Can I return a product I've used?**\nA: Generally no. Products must be in original, unused condition. Exceptions apply for defective or damaged items.\n\n**Q: Can I get a refund without returning the item?**\nA: Only in cases of damage on arrival or manufacturing defect confirmed by the support team.\n\n**Q: What if I don't have my order number?**\nA: The agent can look up the order using the customer's registered email address.\n\n**Q: Do you offer free returns?**\nA: Yes, for wrong items delivered and damaged/defective items. Standard returns may incur a return shipping fee depending on the reason.\n\n**Q: Can I exchange instead of getting a refund?**\nA: Yes, subject to stock availability. See the Exchange Policy section above.\n\n### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.\n\n### Refund Eligibility\n- Refunds are only issued after eligibility is confirmed via the `check_refund_eligibility` tool.\n- Refunds are processed to the original payment method.\n- Standard processing time: **5\u20137 business days** after approval.\n- Refunds cannot be reversed once issued.\n\n### Partial Refunds\n- Partial refunds may be issued for items returned in non-original condition.\n- A restocking fee of 10% may apply to high-value electronics returned outside of 7 days.\n\n### Refund Exceptions by Customer Tier\n- **Standard**: Standard return and refund policy applies. No exceptions.\n- **Premium**: Agents may use judgment to approve borderline cases (e.g. 1\u20133 days outside return window). Requires supervisor note.\n- **VIP**: Extended leniency. Management pre-approvals may be on file. Always check customer notes before declining.\n\nIf you have any other questions, feel free to ask!\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T17:00:00Z",
+    "ticket_id": "TKT-020",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "james.wu@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C010",
+        "name": "James Wu",
+        "email": "james.wu@email.com",
+        "phone": "+1-858-555-0199",
+        "tier": "standard",
+        "member_since": "2023-03-28",
+        "total_orders": 6,
+        "total_spent": 430.15,
+        "address": {
+          "street": "40 Harbor View",
+          "city": "San Diego",
+          "state": "CA",
+          "zip": "92101"
+        },
+        "notes": "No issues on record."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T17:00:00Z",
+    "ticket_id": "TKT-020",
+    "tool": "search_knowledge_base",
+    "inputs": {
+      "query": "damaged defective arrival"
+    },
+    "output": {
+      "success": true,
+      "results": [
+        "### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.",
+        "## 8. Common FAQs\n**Q: How long does a refund take?**\nA: Refunds are processed within 5\u20137 business days after approval. The time to appear in the customer's account depends on their bank.\n\n**Q: Can I return a product I've used?**\nA: Generally no. Products must be in original, unused condition. Exceptions apply for defective or damaged items.\n\n**Q: Can I get a refund without returning the item?**\nA: Only in cases of damage on arrival or manufacturing defect confirmed by the support team.\n\n**Q: What if I don't have my order number?**\nA: The agent can look up the order using the customer's registered email address.\n\n**Q: Do you offer free returns?**\nA: Yes, for wrong items delivered and damaged/defective items. Standard returns may incur a return shipping fee depending on the reason.\n\n**Q: Can I exchange instead of getting a refund?**\nA: Yes, subject to stock availability. See the Exchange Policy section above.",
+        "## 7. Escalation Guidelines\nEscalate a ticket to a human agent when:\n- The issue involves a warranty claim (all warranty claims go to the warranty team).\n- The customer is requesting a replacement (not a refund) for a damaged item.\n- There is conflicting data between customer claims and system records.\n- The refund amount exceeds $200.\n- There are signs of fraud, manipulation, or social engineering.\n- The resolution requires supervisor approval (e.g. borderline premium case).\n- The agent confidence score is below 0.6.\n\nWhen escalating, always include:\n1. A concise summary of the issue\n2. What the agent attempted or verified\n3. The recommended resolution path\n4. The priority level (low / medium / high / urgent)"
+      ],
+      "match_count": 3,
+      "search_engine": "keyword_v2",
+      "index_freshness": "2024-03-15T00:00:00Z"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T17:00:00Z",
+    "ticket_id": "TKT-020",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-020",
+      "message_length": 118
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-020",
+      "message_sent": "Hi James,\n\nSorry to hear that. Please provide your order number so we can investigate.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-14T16:00:00Z",
+    "ticket_id": "TKT-006",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "frank.osei@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C006",
+        "name": "Frank Osei",
+        "email": "frank.osei@email.com",
+        "phone": "+1-404-555-0112",
+        "tier": "standard",
+        "member_since": "2024-01-14",
+        "total_orders": 1,
+        "total_spent": 49.99,
+        "address": {
+          "street": "19 Elm Street",
+          "city": "Atlanta",
+          "state": "GA",
+          "zip": "30301"
+        },
+        "notes": "Brand new customer. First and only order."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-14T16:00:00Z",
+    "ticket_id": "TKT-006",
+    "tool": "search_knowledge_base",
+    "inputs": {
+      "query": "order cancellation policy"
+    },
+    "output": {
+      "success": true,
+      "results": [
+        "## 4. Order Cancellation Policy\n- Orders in **processing** status can be cancelled free of charge at any time before shipment.\n- Orders in **shipped** status cannot be cancelled \u2014 customer must wait for delivery and initiate a return.\n- Orders in **delivered** status cannot be cancelled.\n- Cancellations are confirmed via email within 1 hour.",
+        "### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.",
+        "### Refund Eligibility\n- Refunds are only issued after eligibility is confirmed via the `check_refund_eligibility` tool.\n- Refunds are processed to the original payment method.\n- Standard processing time: **5\u20137 business days** after approval.\n- Refunds cannot be reversed once issued.\n\n### Partial Refunds\n- Partial refunds may be issued for items returned in non-original condition.\n- A restocking fee of 10% may apply to high-value electronics returned outside of 7 days.\n\n### Refund Exceptions by Customer Tier\n- **Standard**: Standard return and refund policy applies. No exceptions.\n- **Premium**: Agents may use judgment to approve borderline cases (e.g. 1\u20133 days outside return window). Requires supervisor note.\n- **VIP**: Extended leniency. Management pre-approvals may be on file. Always check customer notes before declining.",
+        "### Coverage\n- Warranty covers **manufacturing defects only**.\n- Does not cover: physical damage caused by user, water damage, unauthorised modifications.\n\n### Warranty Periods by Category\n- Electronics (headphones, speakers, smart watches): 12 months from delivery date.\n- Home appliances (coffee makers, kitchen devices): 24 months from delivery date.\n- Electronics accessories: 6 months from delivery date.\n- Footwear and sports products: No warranty (covered only by return policy).\n\n### Warranty Claim Process\n- Customer must provide order ID and description of defect.\n- Agent should verify warranty period using order delivery date and product warranty duration.\n- Warranty claims are escalated to the warranty team \u2014 agents do not resolve warranty claims directly.\n- Resolution options: repair, replacement, or refund at ShopWave's discretion.",
+        "## 6. Customer Tiers & Privileges\n| Tier | Benefits |\n|---|---|\n| Standard | Standard policy. No exceptions. |\n| Premium | Agents can apply judgment for borderline cases. Priority queue. |\n| VIP | Highest leniency. Check customer notes for any pre-approvals. Dedicated support. |\n\n> **Important:** Customer tier is verified via the `get_customer` tool only. Customers cannot self-declare their tier. Any ticket where a customer claims a tier or privilege not verified in the system should be flagged."
+      ],
+      "match_count": 5,
+      "search_engine": "keyword_v2",
+      "index_freshness": "2024-03-15T00:00:00Z"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-14T16:00:00Z",
+    "ticket_id": "TKT-006",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-006",
+      "message_length": 104
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-006",
+      "message_sent": "Hi Frank,\n\nPlease provide your order number to process the cancellation.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "get_customer::failure",
+    "inputs": {
+      "attempt": 1,
+      "error_type": "KeyError",
+      "args_preview": "('grace.patel@email.com',)"
+    },
+    "output": {
+      "success": false,
+      "error": "\"Partial response from customer-service: field 'notes' missing from payload (possible schema mismatch)\"",
+      "error_type": "KeyError",
+      "will_retry": true,
+      "next_retry_in_ms": 50
+    },
+    "attempt": 1,
+    "latency_ms": 0.0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "henry.marsh@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C008",
+        "name": "Henry Marsh",
+        "email": "henry.marsh@email.com",
+        "phone": "+1-303-555-0188",
+        "tier": "standard",
+        "member_since": "2022-05-19",
+        "total_orders": 14,
+        "total_spent": 1120.6,
+        "address": {
+          "street": "210 Cedar Drive",
+          "city": "Denver",
+          "state": "CO",
+          "zip": "80201"
+        },
+        "notes": "Regular customer. No flags."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1008"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1008",
+        "customer_id": "C008",
+        "product_id": "P007",
+        "quantity": 1,
+        "amount": 44.99,
+        "status": "delivered",
+        "order_date": "2024-03-05",
+        "delivery_date": "2024-03-08",
+        "return_deadline": "2024-04-07",
+        "refund_status": null,
+        "notes": "Item reported as damaged on arrival by customer via email. No formal claim opened."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "get_product::failure",
+    "inputs": {
+      "attempt": 1,
+      "error_type": "ValueError",
+      "args_preview": "('P007',)"
+    },
+    "output": {
+      "success": false,
+      "error": "JSON decode error: unexpected token at position 847 in response body from product-catalog-v2",
+      "error_type": "ValueError",
+      "will_retry": true,
+      "next_retry_in_ms": 50
+    },
+    "attempt": 1,
+    "latency_ms": 0.0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:00:00Z",
+    "ticket_id": "TKT-013",
+    "tool": "check_refund_eligibility::failure",
+    "inputs": {
+      "attempt": 1,
+      "error_type": "ConnectionError",
+      "args_preview": "('ORD-1013',)"
+    },
+    "output": {
+      "success": false,
+      "error": "429 Too Many Requests: rate limit exceeded (60 req/min). Retry-After: 2s",
+      "error_type": "ConnectionError",
+      "will_retry": true,
+      "next_retry_in_ms": 50
+    },
+    "attempt": 1,
+    "latency_ms": 20.4,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "get_order::failure",
+    "inputs": {
+      "attempt": 1,
+      "error_type": "TimeoutError",
+      "args_preview": "('ORD-1004',)"
+    },
+    "output": {
+      "success": false,
+      "error": "upstream connect error: connection timed out after 5000ms to order-service.internal:8080",
+      "error_type": "TimeoutError",
+      "will_retry": true,
+      "next_retry_in_ms": 50
+    },
+    "attempt": 1,
+    "latency_ms": 50.4,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P007"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P007",
+        "name": "LumiDesk LED Desk Lamp",
+        "category": "home",
+        "price": 44.99,
+        "warranty_months": 12,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Standard return policy applies."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "get_product::recovery",
+    "inputs": {
+      "retry_attempt": 2,
+      "previous_error_type": "ValueError"
+    },
+    "output": {
+      "recovered": true,
+      "previous_error": "JSON decode error: unexpected token at position 847 in response body from product-catalog-v2"
+    },
+    "attempt": 2,
+    "latency_ms": 0.1,
+    "recovered_from_failure": true,
+    "error_on_previous_attempt": "JSON decode error: unexpected token at position 847 in response body from product-catalog-v2"
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1008"
+    },
+    "output": {
+      "success": true,
+      "eligible": true,
+      "reason": "Order is within the return window and eligible for refund.",
+      "return_deadline": "2024-04-07",
+      "amount": 44.99,
+      "order": {
+        "order_id": "ORD-1008",
+        "customer_id": "C008",
+        "product_id": "P007",
+        "quantity": 1,
+        "amount": 44.99,
+        "status": "delivered",
+        "order_date": "2024-03-05",
+        "delivery_date": "2024-03-08",
+        "return_deadline": "2024-04-07",
+        "refund_status": null,
+        "notes": "Item reported as damaged on arrival by customer via email. No formal claim opened."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "issue_refund",
+    "inputs": {
+      "order_id": "ORD-1008",
+      "amount": 44.99,
+      "IRREVERSIBLE": true
+    },
+    "output": {
+      "success": true,
+      "message": "Refund of $44.99 issued for order ORD-1008. Payment gateway confirmation pending (5-7 business days).",
+      "refund_amount": 44.99,
+      "order_id": "ORD-1008",
+      "irreversible": true,
+      "payment_gateway": "stripe_mock",
+      "transaction_id": "TXN-34204"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-09T09:00:00Z",
+    "ticket_id": "TKT-008",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-008",
+      "message_length": 215
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-008",
+      "message_sent": "Hi Henry,\n\nWe're sorry your LumiDesk LED Desk Lamp arrived damaged.\n\nWe've issued a **full refund of $44.99**. Allow 5\u20137 business days.\nYou do **not** need to return the damaged item.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-011",
+      "message_length": 219
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-011",
+      "message_sent": "Hi Alice,\n\nWe sincerely apologize for sending the wrong item. Your case has been escalated to our specialist team who will arrange an exchange or refund. You'll hear back within 24 hours.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-13T10:30:00Z",
+    "ticket_id": "TKT-011",
+    "tool": "send_reply::recovery",
+    "inputs": {
+      "retry_attempt": 2,
+      "previous_error_type": "ConnectionError"
+    },
+    "output": {
+      "recovered": true,
+      "previous_error": "ConnectionError: [Errno 111] Connection refused \u2014 notification-service.internal:443 is unreachable"
+    },
+    "attempt": 2,
+    "latency_ms": 0.0,
+    "recovered_from_failure": true,
+    "error_on_previous_attempt": "ConnectionError: [Errno 111] Connection refused \u2014 notification-service.internal:443 is unreachable"
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "get_customer",
+    "inputs": {
+      "email": "grace.patel@email.com"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "customer_id": "C007",
+        "name": "Grace Patel",
+        "email": "grace.patel@email.com",
+        "phone": "+1-617-555-0134",
+        "tier": "premium",
+        "member_since": "2020-08-22",
+        "total_orders": 35,
+        "total_spent": 4890.0,
+        "address": {
+          "street": "56 Willow Way",
+          "city": "Boston",
+          "state": "MA",
+          "zip": "02101"
+        },
+        "notes": "Premium member. Has submitted 4 refund requests \u2014 all legitimate, all approved."
+      },
+      "source": "customer_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "get_customer::recovery",
+    "inputs": {
+      "retry_attempt": 2,
+      "previous_error_type": "KeyError"
+    },
+    "output": {
+      "recovered": true,
+      "previous_error": "\"Partial response from customer-service: field 'notes' missing from payload (possible schema mismatch)\""
+    },
+    "attempt": 2,
+    "latency_ms": 0.1,
+    "recovered_from_failure": true,
+    "error_on_previous_attempt": "\"Partial response from customer-service: field 'notes' missing from payload (possible schema mismatch)\""
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1007"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1007",
+        "customer_id": "C007",
+        "product_id": "P004",
+        "quantity": 1,
+        "amount": 49.99,
+        "status": "delivered",
+        "order_date": "2024-02-01",
+        "delivery_date": "2024-02-05",
+        "return_deadline": "2024-04-05",
+        "refund_status": null,
+        "notes": "60-day return window applies for this product category."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P004"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P004",
+        "name": "ErgoLift Laptop Stand",
+        "category": "electronics_accessories",
+        "price": 49.99,
+        "warranty_months": 6,
+        "return_window_days": 60,
+        "returnable": true,
+        "notes": "Extended 60-day return window applies to this product category."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1007"
+    },
+    "output": {
+      "success": true,
+      "eligible": true,
+      "reason": "Order is within the return window and eligible for refund.",
+      "return_deadline": "2024-04-05",
+      "amount": 49.99,
+      "order": {
+        "order_id": "ORD-1007",
+        "customer_id": "C007",
+        "product_id": "P004",
+        "quantity": 1,
+        "amount": 49.99,
+        "status": "delivered",
+        "order_date": "2024-02-01",
+        "delivery_date": "2024-02-05",
+        "return_deadline": "2024-04-05",
+        "refund_status": null,
+        "notes": "60-day return window applies for this product category."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "issue_refund",
+    "inputs": {
+      "order_id": "ORD-1007",
+      "amount": 49.99,
+      "IRREVERSIBLE": true
+    },
+    "output": {
+      "success": true,
+      "message": "Refund of $49.99 issued for order ORD-1007. Payment gateway confirmation pending (5-7 business days).",
+      "refund_amount": 49.99,
+      "order_id": "ORD-1007",
+      "irreversible": true,
+      "payment_gateway": "stripe_mock",
+      "transaction_id": "TXN-58205"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T13:20:00Z",
+    "ticket_id": "TKT-007",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-007",
+      "message_length": 174
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-007",
+      "message_sent": "Hi Grace,\n\nYour refund for order ORD-1007 (ErgoLift Laptop Stand) has been approved! \u2705\n\n\ud83d\udcb0 **Refund:** $49.99\n\ud83d\udcc5 **Expected:** 5\u20137 business days\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:00:00Z",
+    "ticket_id": "TKT-009",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1009"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1009",
+        "customer_id": "C009",
+        "product_id": "P001",
+        "quantity": 1,
+        "amount": 129.99,
+        "status": "delivered",
+        "order_date": "2024-02-25",
+        "delivery_date": "2024-02-28",
+        "return_deadline": "2024-03-29",
+        "refund_status": "refunded",
+        "notes": "Refund already processed on 2024-03-02 for this order. Full amount returned."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:00:00Z",
+    "ticket_id": "TKT-009",
+    "tool": "get_order::recovery",
+    "inputs": {
+      "retry_attempt": 2,
+      "previous_error_type": "ValueError"
+    },
+    "output": {
+      "recovered": true,
+      "previous_error": "Cache-Status: HIT, Age: 3600s \u2014 serving stale data from CDN edge (order-svc cache invalidation lag)"
+    },
+    "attempt": 2,
+    "latency_ms": 0.1,
+    "recovered_from_failure": true,
+    "error_on_previous_attempt": "Cache-Status: HIT, Age: 3600s \u2014 serving stale data from CDN edge (order-svc cache invalidation lag)"
+  },
+  {
+    "timestamp": "2024-03-15T11:00:00Z",
+    "ticket_id": "TKT-009",
+    "tool": "search_knowledge_base",
+    "inputs": {
+      "query": "refund processing 5-7 business days"
+    },
+    "output": {
+      "success": true,
+      "results": [
+        "### Refund Eligibility\n- Refunds are only issued after eligibility is confirmed via the `check_refund_eligibility` tool.\n- Refunds are processed to the original payment method.\n- Standard processing time: **5\u20137 business days** after approval.\n- Refunds cannot be reversed once issued.\n\n### Partial Refunds\n- Partial refunds may be issued for items returned in non-original condition.\n- A restocking fee of 10% may apply to high-value electronics returned outside of 7 days.\n\n### Refund Exceptions by Customer Tier\n- **Standard**: Standard return and refund policy applies. No exceptions.\n- **Premium**: Agents may use judgment to approve borderline cases (e.g. 1\u20133 days outside return window). Requires supervisor note.\n- **VIP**: Extended leniency. Management pre-approvals may be on file. Always check customer notes before declining.",
+        "## 8. Common FAQs\n**Q: How long does a refund take?**\nA: Refunds are processed within 5\u20137 business days after approval. The time to appear in the customer's account depends on their bank.\n\n**Q: Can I return a product I've used?**\nA: Generally no. Products must be in original, unused condition. Exceptions apply for defective or damaged items.\n\n**Q: Can I get a refund without returning the item?**\nA: Only in cases of damage on arrival or manufacturing defect confirmed by the support team.\n\n**Q: What if I don't have my order number?**\nA: The agent can look up the order using the customer's registered email address.\n\n**Q: Do you offer free returns?**\nA: Yes, for wrong items delivered and damaged/defective items. Standard returns may incur a return shipping fee depending on the reason.\n\n**Q: Can I exchange instead of getting a refund?**\nA: Yes, subject to stock availability. See the Exchange Policy section above.",
+        "### Standard Return Window\n- Most products have a **30-day return window** from the date of delivery.\n- Items must be unused, in original condition, and in original packaging.\n- Proof of purchase (order ID) is required for all returns.\n\n### Category-Specific Return Windows\n- **Electronics accessories** (laptop stands, cables, mounts): 60-day return window.\n- **High-value electronics** (smart watches, tablets, laptops): 15-day return window only.\n- **Footwear**: 30-day return window. Item must be unworn with no outdoor use.\n- **Sports & fitness equipment**: 30-day return window. Non-returnable if used (hygiene policy).\n\n### Non-Returnable Items\n- Items registered online after purchase (e.g. Bluetooth devices, smart devices with activation).\n- Perishable goods.\n- Downloadable software or digital content.\n- Items marked as \"Final Sale\" at time of purchase.\n\n### Damaged or Defective on Arrival\n- If an item arrives damaged or defective, the customer is eligible for a **full refund or replacement regardless of return window**.\n- Photo evidence is required to process the claim.\n- The customer is not required to return the damaged item in most cases \u2014 agent should use judgment.\n\n### Wrong Item Delivered\n- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.\n- If the correct item is out of stock, a full refund is issued.\n- This does not count against the standard return window.",
+        "### Coverage\n- Warranty covers **manufacturing defects only**.\n- Does not cover: physical damage caused by user, water damage, unauthorised modifications.\n\n### Warranty Periods by Category\n- Electronics (headphones, speakers, smart watches): 12 months from delivery date.\n- Home appliances (coffee makers, kitchen devices): 24 months from delivery date.\n- Electronics accessories: 6 months from delivery date.\n- Footwear and sports products: No warranty (covered only by return policy).\n\n### Warranty Claim Process\n- Customer must provide order ID and description of defect.\n- Agent should verify warranty period using order delivery date and product warranty duration.\n- Warranty claims are escalated to the warranty team \u2014 agents do not resolve warranty claims directly.\n- Resolution options: repair, replacement, or refund at ShopWave's discretion.",
+        "## 4. Order Cancellation Policy\n- Orders in **processing** status can be cancelled free of charge at any time before shipment.\n- Orders in **shipped** status cannot be cancelled \u2014 customer must wait for delivery and initiate a return.\n- Orders in **delivered** status cannot be cancelled.\n- Cancellations are confirmed via email within 1 hour."
+      ],
+      "match_count": 5,
+      "search_engine": "keyword_v2",
+      "index_freshness": "2024-03-15T00:00:00Z"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T11:00:00Z",
+    "ticket_id": "TKT-009",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-009",
+      "message_length": 221
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-009",
+      "message_sent": "Hi Irene,\n\nGreat news! The refund for order ORD-1009 has been **successfully processed**.\n\n\ud83d\udcb0 **Refund Amount:** $129.99\n\nPlease allow **5\u20137 business days** for it to appear in your account.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:00:00Z",
+    "ticket_id": "TKT-013",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1013"
+    },
+    "output": {
+      "success": true,
+      "eligible": false,
+      "reason": "Item is non-returnable (device registered online or policy restriction).",
+      "device_registered": true,
+      "return_deadline": "2024-02-23",
+      "within_window": false,
+      "warranty_active": true,
+      "order": {
+        "order_id": "ORD-1013",
+        "customer_id": "C007",
+        "product_id": "P008",
+        "quantity": 1,
+        "amount": 79.99,
+        "status": "delivered",
+        "order_date": "2024-01-20",
+        "delivery_date": "2024-01-24",
+        "return_deadline": "2024-02-23",
+        "refund_status": null,
+        "notes": "Return window expired. Device was registered online by customer on 2024-01-25. Non-returnable per policy."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T14:00:00Z",
+    "ticket_id": "TKT-013",
+    "tool": "check_refund_eligibility::recovery",
+    "inputs": {
+      "retry_attempt": 2,
+      "previous_error_type": "ConnectionError"
+    },
+    "output": {
+      "recovered": true,
+      "previous_error": "429 Too Many Requests: rate limit exceeded (60 req/min). Retry-After: 2s"
+    },
+    "attempt": 2,
+    "latency_ms": 0.2,
+    "recovered_from_failure": true,
+    "error_on_previous_attempt": "429 Too Many Requests: rate limit exceeded (60 req/min). Retry-After: 2s"
+  },
+  {
+    "timestamp": "2024-03-15T14:00:00Z",
+    "ticket_id": "TKT-013",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-013",
+      "message_length": 403
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-013",
+      "message_sent": "Hi Grace,\n\nWe've reviewed your request for order ORD-1013 (BoomBox Mini Bluetooth Speaker).\n\nUnfortunately, item is non-returnable (device registered online or policy restriction).\n\nAdditionally, the device was registered online, making it non-returnable per our policy.\n\nHowever, your item may still be under warranty. Let us know if you'd like to open a warranty claim.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "get_order",
+    "inputs": {
+      "order_id": "ORD-1004"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "order_id": "ORD-1004",
+        "customer_id": "C004",
+        "product_id": "P002",
+        "quantity": 1,
+        "amount": 89.99,
+        "status": "delivered",
+        "order_date": "2024-02-20",
+        "delivery_date": "2024-02-24",
+        "return_deadline": "2024-03-25",
+        "refund_status": null,
+        "notes": "Customer requested size exchange via chat but no formal return initiated."
+      },
+      "source": "primary_db"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "get_order::recovery",
+    "inputs": {
+      "retry_attempt": 2,
+      "previous_error_type": "TimeoutError"
+    },
+    "output": {
+      "recovered": true,
+      "previous_error": "upstream connect error: connection timed out after 5000ms to order-service.internal:8080"
+    },
+    "attempt": 2,
+    "latency_ms": 0.1,
+    "recovered_from_failure": true,
+    "error_on_previous_attempt": "upstream connect error: connection timed out after 5000ms to order-service.internal:8080"
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "get_product",
+    "inputs": {
+      "product_id": "P002"
+    },
+    "output": {
+      "success": true,
+      "data": {
+        "product_id": "P002",
+        "name": "SwiftRun Pro Running Shoes",
+        "category": "footwear",
+        "price": 89.99,
+        "warranty_months": 0,
+        "return_window_days": 30,
+        "returnable": true,
+        "notes": "Must be unworn and in original packaging. No return if used outdoors."
+      },
+      "source": "product_catalog_v2"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "check_refund_eligibility",
+    "inputs": {
+      "order_id": "ORD-1004"
+    },
+    "output": {
+      "success": true,
+      "eligible": true,
+      "reason": "Order is within the return window and eligible for refund.",
+      "return_deadline": "2024-03-25",
+      "amount": 89.99,
+      "order": {
+        "order_id": "ORD-1004",
+        "customer_id": "C004",
+        "product_id": "P002",
+        "quantity": 1,
+        "amount": 89.99,
+        "status": "delivered",
+        "order_date": "2024-02-20",
+        "delivery_date": "2024-02-24",
+        "return_deadline": "2024-03-25",
+        "refund_status": null,
+        "notes": "Customer requested size exchange via chat but no formal return initiated."
+      }
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "issue_refund",
+    "inputs": {
+      "order_id": "ORD-1004",
+      "amount": 89.99,
+      "IRREVERSIBLE": true
+    },
+    "output": {
+      "success": true,
+      "message": "Refund of $89.99 issued for order ORD-1004. Payment gateway confirmation pending (5-7 business days).",
+      "refund_amount": 89.99,
+      "order_id": "ORD-1004",
+      "irreversible": true,
+      "payment_gateway": "stripe_mock",
+      "transaction_id": "TXN-71018"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  },
+  {
+    "timestamp": "2024-03-15T10:00:00Z",
+    "ticket_id": "TKT-004",
+    "tool": "send_reply",
+    "inputs": {
+      "ticket_id": "TKT-004",
+      "message_length": 277
+    },
+    "output": {
+      "success": true,
+      "ticket_id": "TKT-004",
+      "message_sent": "Hi David,\n\nWe're sorry about the mix-up with order ORD-1004 (SwiftRun Pro Running Shoes).\n\nWe've issued a **full refund of $89.99**. Allow 5\u20137 business days.\n\nIf you'd prefer an exchange, let us know! You don't need to return the incorrect item.\n\nBest regards,\nShopWave Support",
+      "channel": "email",
+      "delivery_status": "queued",
+      "estimated_delivery": "< 30s"
+    },
+    "attempt": 1,
+    "latency_ms": 0,
+    "recovered_from_failure": false
+  }
+]
