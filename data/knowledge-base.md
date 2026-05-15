@@ -23,7 +23,7 @@
 - The customer is not required to return the damaged item in most cases — agent should use judgment.
 
 ### Wrong Item Delivered
-- If the wrong item is delivered, ShopWave will arrange return pickup and ship the correct item at no cost.
+- If the wrong item is delivered, NexusDesk will arrange return pickup and ship the correct item at no cost.
 - If the correct item is out of stock, a full refund is issued.
 - This does not count against the standard return window.
 
@@ -60,7 +60,7 @@
 - Customer must provide order ID and description of defect.
 - Agent should verify warranty period using order delivery date and product warranty duration.
 - Warranty claims are escalated to the warranty team — agents do not resolve warranty claims directly.
-- Resolution options: repair, replacement, or refund at ShopWave's discretion.
+- Resolution options: repair, replacement, or refund at NexusDesk's discretion.
 
 ---
 

@@ -1,5 +1,5 @@
 """
-ShopWave Agent — Live Web Dashboard
+NexusDesk Agent — Live Web Dashboard
 =====================================
 A single-file web application (no dependencies beyond stdlib) that:
 1. Runs the agent on all 20 tickets
@@ -106,7 +106,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShopWave Agent — Live Dashboard</title>
+<title>NexusDesk Agent — Live Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -338,7 +338,7 @@ tr:hover { background: rgba(59,130,246,0.04); }
 <body>
 <div class="container">
   <div class="header">
-    <h1>🛒 ShopWave Autonomous Support Agent</h1>
+    <h1>🛒 NexusDesk Autonomous Support Agent</h1>
     <p class="subtitle">Live Dashboard — Processing 20 tickets concurrently with failure recovery</p>
     <div class="badge-row">
       <span class="badge badge-blue">NO LLM</span>
@@ -488,7 +488,7 @@ function render(data) {
     }
   }
 
-  html += `<div class="footer">ShopWave Autonomous Support Agent v3 · Ksolves Agentic AI Hackathon 2026 · No LLM · Pure Python</div>`;
+  html += `<div class="footer">NexusDesk Autonomous Support Agent v4 · No LLM · Pure Python</div>`;
   el.innerHTML = html;
 }
 
@@ -523,7 +523,7 @@ def main():
 
     print(f"""
 \033[96m\033[1m╔══════════════════════════════════════════════════════════════╗
-║     🛒 ShopWave Autonomous Support Agent — Live Dashboard    ║
+║     🛒 NexusDesk Autonomous Support Agent — Live Dashboard    ║
 ╚══════════════════════════════════════════════════════════════╝\033[0m
 """)
     print(f"  \033[1mStarting agent...\033[0m")

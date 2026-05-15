@@ -1,5 +1,5 @@
 /* =====================================================
-   ShopWave — Cyber-Premium Support Hub v5
+   NexusDesk — Cyber-Premium Support Hub v5
    Complete Design System
    ===================================================== */
 
@@ -264,9 +264,16 @@ body {
   height: 24px;
 }
 
-.nav-item:hover:not(.active) {
+.nav-item:hover:not(.active),
+.nav-item:focus:not(.active) {
   background: rgba(255, 255, 255, 0.03);
   color: rgba(255, 255, 255, 0.8);
+  outline: none;
+}
+
+.nav-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--sw-blue);
+  outline: none;
 }
 
 .nav-icon { font-size: 1.1rem; width: 24px; text-align: center; }
@@ -426,6 +433,11 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none !important;
+}
+
+.cyber-btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--sw-black), 0 0 0 5px var(--sw-blue);
+  outline: none;
 }
 
 .cyber-btn.loading .btn-text {
@@ -636,16 +648,17 @@ body {
   overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.04);
   line-height: 1.6;
+  word-break: break-word;
 }
 
 .stream-placeholder {
-  color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-style: italic;
 }
 
@@ -1324,12 +1337,25 @@ body {
 }
 
 @media (max-width: 900px) {
-  .sidebar { width: 220px; min-width: 220px; padding: 1.5rem 1rem; }
-  .main-content { padding: 1.5rem 2rem; }
+  .layout-wrapper { flex-direction: column; }
+  .sidebar { width: 100%; min-width: 100%; height: auto; padding: 1rem; border-right: none; border-bottom: 1px solid var(--sw-border); flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; z-index: 100; }
+  .sidebar::after { display: none; }
+  .brand { margin-bottom: 0; }
+  .nav-section { margin-bottom: 0; }
+  .nav-list { display: flex; gap: 0.5rem; }
+  .nav-item { padding: 0.5rem 0.75rem; margin-bottom: 0; }
+  .nav-item::before { top: auto; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 3px; transition: width 0.3s; }
+  .nav-item.active::before { width: 24px; height: 3px; }
+  .nav-text { display: none; } /* Hide text, show only icons on mobile nav */
+  .system-status { display: none; }
+  .main-content { padding: 1.5rem 1rem; overflow-x: hidden; }
+  .main-content::before { display: none; }
   .content-row { flex-direction: column; min-height: auto; }
   .hub-layout { flex-direction: column; height: auto; }
   .ticket-explorer { max-width: 100%; }
   .metrics-grid { grid-template-columns: 1fr; }
+  .top-nav { flex-direction: column; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+  .page-title h1 { font-size: 1.5rem; }
 }
 
 /* ---- SCAN LINE EFFECT (Reasoning Stream) ---- */

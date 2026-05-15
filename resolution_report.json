@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "ticket_id": "TKT-001",
     "resolution": "escalated",
@@ -200,7 +200,7 @@
         "observation": "order_id_extracted=ORD-1004"
       },
       {
-        "thought": "Customer: David Park, tier=standard, notes='Has raised 1 chargeback dispute in the past \u2014 resolved in ShopWave's favour.'",
+        "thought": "Customer: David Park, tier=standard, notes='Has raised 1 chargeback dispute in the past \u2014 resolved in NexusDesk's favour.'",
         "action": "get_customer",
         "observation": "customer_id=C004 | DECISION: tier verified from system, not from customer claim."
       },
@@ -902,7 +902,7 @@
         "observation": "order_id_extracted=ORD-9999"
       },
       {
-        "thought": "Customer: David Park, tier=standard, notes='Has raised 1 chargeback dispute in the past \u2014 resolved in ShopWave's favour.'",
+        "thought": "Customer: David Park, tier=standard, notes='Has raised 1 chargeback dispute in the past \u2014 resolved in NexusDesk's favour.'",
         "action": "get_customer",
         "observation": "customer_id=C004 | DECISION: tier verified from system, not from customer claim."
       },

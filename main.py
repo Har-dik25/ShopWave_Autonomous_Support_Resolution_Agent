@@ -1,5 +1,5 @@
 """
-ShopWave Autonomous Support Resolution Agent — Main Entry Point (v2)
+NexusDesk Autonomous Support Resolution Agent — Main Entry Point (v2)
 =====================================================================
 Key v2 features:
   - CONCURRENT ticket processing via ThreadPoolExecutor
@@ -47,7 +47,7 @@ class C:
 def print_banner():
     print(f"""
 {C.CYAN}{C.BOLD}╔══════════════════════════════════════════════════════════════════════════╗
-║        🛒  ShopWave Autonomous Support Resolution Agent v2  🛒          ║
+║        🛒  NexusDesk Autonomous Support Resolution Agent v2  🛒          ║
 ║           Concurrent • Resilient • Explainable • No LLM                 ║
 ╚══════════════════════════════════════════════════════════════════════════╝{C.RESET}
 """)

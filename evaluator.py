@@ -1,5 +1,5 @@
 """
-ShopWave Agent — Self-Evaluation Module
+NexusDesk Agent — Self-Evaluation Module
 ========================================
 Compares agent resolution output against expected_action in the
 ticket data. Produces accuracy metrics and identifies mismatches.
@@ -193,9 +193,7 @@ def _generate_self_assessment(details: list) -> dict:
         "known_weaknesses": weaknesses,
         "known_limitations": [
             "Cannot process image attachments (e.g. damage photos) — would escalate instead",
-            "Keyword-based classification may misclassify edge cases with unusual phrasing",
             "No learning loop — same mistakes will repeat without code changes",
-            "Cannot handle multi-turn conversations (processes single ticket snapshot)",
             "Concurrent processing may cause slight ordering differences in audit log",
         ],
     }

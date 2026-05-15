@@ -1,4 +1,4 @@
-# 🏗️ Architecture Diagram — ShopWave Autonomous Support Agent
+﻿# 🏗️ Architecture Diagram — NexusDesk Autonomous Support Agent
 
 ## System Overview (1-Page)
 

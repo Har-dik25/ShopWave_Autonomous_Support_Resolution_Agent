@@ -2,7 +2,7 @@ import './style.css';
 import Chart from 'chart.js/auto';
 
 // ═══════════════════════════════════════════════════════════
-//  ShopWave — Autonomous Support Command Center v5
+//  NexusDesk — Autonomous Support Command Center v5
 //  Premium Frontend Logic
 // ═══════════════════════════════════════════════════════════
 
@@ -33,7 +33,26 @@ const progressCount = document.getElementById('progress-count');
 const ticketFilter = document.getElementById('ticket-filter');
 
 // --- API Service ---
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
+
+// ═══════════════════════════════════════════════════════════
+//  SECURITY & UTILS
+// ═══════════════════════════════════════════════════════════
+function escapeHTML(str) {
+  if (typeof str !== 'string') return String(str || '');
+  return str.replace(/[&<>'\"/]/g, function (s) {
+    const entityMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;',
+        '/': '&#x2F;'
+    };
+    return entityMap[s];
+  });
+}
+
 
 // ═══════════════════════════════════════════════════════════
 //  INITIALIZATION
@@ -207,11 +226,23 @@ function setupSSE() {
       }
     };
 
+    let reconnectAttempts = 0;
     eventSource.onerror = () => {
       console.warn('SSE connection issue. Will reconnect...');
+      reconnectAttempts++;
+      if (reconnectAttempts === 1) {
+        showToast('error', '⚠️ Connection lost. Attempting to reconnect...');
+      }
+    };
+    eventSource.onopen = () => {
+      if (reconnectAttempts > 0) {
+        showToast('success', '✅ Reconnected to neural stream.');
+        reconnectAttempts = 0;
+      }
     };
   } catch (e) {
     console.warn('SSE not available:', e);
+    showToast('error', '❌ Neural stream unavailable.');
   }
 }
 
@@ -240,10 +271,12 @@ function appendStream(tid, step) {
   const thought = step.thought || step.reasoning || '';
   const truncated = thought.length > 90 ? thought.substring(0, 90) + '…' : thought;
 
+  const escapedThought = escapeHTML(truncated);
+
   div.innerHTML = `
-    <span class="stream-tid">${tid}</span>
-    <span class="stream-icon">${icon}</span>
-    <span class="stream-thought">${truncated}</span>
+    <span class="stream-tid">${escapeHTML(tid)}</span>
+    <span class="stream-icon">${escapeHTML(icon)}</span>
+    <span class="stream-thought">${escapedThought}</span>
   `;
 
   stream.prepend(div);
@@ -269,7 +302,11 @@ async function startSweep() {
   showProgressBar();
 
   try {
-    const res = await fetch(`${API_BASE}/run`, { method: 'POST' });
+    const res = await fetch(`${API_BASE}/run`, { 
+      method: 'POST',
+      headers: { 'X-API-Key': 'nd_sk_live_12345' }
+    });
+    if (!res.ok) throw new Error('API Error: ' + res.status);
     const data = await res.json();
     state.total = data.total || 0;
     updateProgressBar();
@@ -287,7 +324,10 @@ async function startSweep() {
 // ═══════════════════════════════════════════════════════════
 async function syncResults() {
   try {
-    const res = await fetch(`${API_BASE}/results`);
+    const res = await fetch(`${API_BASE}/results`, {
+      headers: { 'X-API-Key': 'nd_sk_live_12345' }
+    });
+    if (!res.ok) throw new Error('API Error: ' + res.status);
     const data = await res.json();
 
     state.results = data.results || [];
@@ -299,6 +339,16 @@ async function syncResults() {
     if (state.activeView === 'analytics') updateAnalytics();
   } catch (e) {
     console.warn('Sync failed (server may not be running):', e.message);
+    showToast('error', '❌ Could not sync with Command Center API.');
+    
+    // Show empty state visually if no results
+    if (state.results.length === 0 && document.getElementById('ticket-list')) {
+        document.getElementById('ticket-list').innerHTML = `
+          <div style="padding: 2rem; text-align: center; color: var(--sw-red); font-size: 0.85rem;">
+            Failed to load data. Please ensure the backend server is running.
+          </div>
+        `;
+    }
   }
 }
 
@@ -423,10 +473,10 @@ function renderTicketHub(filter = '') {
   list.innerHTML = filtered.map(r => {
     const isSelected = r.ticket_id === state.selectedTicketId;
     return `
-      <div class="scroller-item ${isSelected ? 'selected' : ''}" data-tid="${r.ticket_id}">
+      <div class="scroller-item ${isSelected ? 'selected' : ''}" data-tid="${escapeHTML(r.ticket_id)}">
         <div class="item-top">
-          <span class="item-id">${r.ticket_id}</span>
-          <span class="item-cat">${r.category || 'unknown'}</span>
+          <span class="item-id">${escapeHTML(r.ticket_id)}</span>
+          <span class="item-cat">${escapeHTML(r.category || 'unknown')}</span>
         </div>
         <div class="item-status ${r.resolution || ''}">${formatResolution(r.resolution)}</div>
       </div>
@@ -472,7 +522,7 @@ function inspectTicket(tid) {
 
   inspector.innerHTML = `
     <div class="inspector-header">
-      <h2>🔍 Inspection: ${tid}</h2>
+      <h2>🔍 Inspection: ${escapeHTML(tid)}</h2>
       <div class="conf-pill">🎯 Confidence: ${Math.round(confidence * 100)}%</div>
     </div>
     <div class="decision-timeline">
@@ -481,9 +531,9 @@ function inspectTicket(tid) {
           <div class="timeline-node glass-medium">
             <div class="node-num">${String(i + 1).padStart(2, '0')}</div>
             <div class="node-content">
-              <p class="node-thought">${s.thought || s.reasoning || ''}</p>
-              ${s.action ? `<div class="node-action">🔧 ${s.action}${s.action_input ? `(${truncObj(s.action_input)})` : ''}</div>` : ''}
-              ${s.observation ? `<div class="node-obs">${truncStr(s.observation, 200)}</div>` : ''}
+              <p class="node-thought">${escapeHTML(s.thought || s.reasoning || '')}</p>
+              ${s.action ? `<div class="node-action">🔧 ${escapeHTML(s.action)}${s.action_input ? `(${escapeHTML(truncObj(s.action_input))})` : ''}</div>` : ''}
+              ${s.observation ? `<div class="node-obs">${escapeHTML(truncStr(s.observation, 200))}</div>` : ''}
             </div>
           </div>
         `).join('')

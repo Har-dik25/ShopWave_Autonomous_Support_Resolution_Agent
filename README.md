@@ -1,8 +1,8 @@
-# 🛒 ShopWave Autonomous Support Resolution Agent
+# 🛒 NexusDesk Autonomous Support Resolution Agent
 
 > **Agentic AI that doesn't just classify tickets — it resolves them.**
 
-An autonomous, rule-based support resolution agent for the ShopWave e-commerce platform. Processes 20 customer support tickets concurrently, resolves them using a 9-tool toolkit, and produces a complete audit trail — all without a single LLM API call.
+An autonomous, rule-based support resolution agent for the NexusDesk e-commerce platform. Processes 20 customer support tickets concurrently, resolves them using a 9-tool toolkit, and produces a complete audit trail — all without a single LLM API call.
 
 ---
 
@@ -10,7 +10,7 @@ An autonomous, rule-based support resolution agent for the ShopWave e-commerce p
 
 ```bash
 # No dependencies — uses only Python 3.10+ standard library
-cd shopwave_agent
+cd nexusdesk_agent
 
 # Option 1: CLI (full output with self-evaluation)
 python main.py
@@ -61,7 +61,7 @@ main.py                 → Entry point: concurrent executor + rich console outp
         ├── customers.json        → 10 customer profiles with tiers
         ├── orders.json           → 20 orders with status + return deadlines
         ├── products.json         → 10 products with warranty + return policies
-        └── knowledge-base.md     → ShopWave support policies & FAQs
+        └── knowledge-base.md     → NexusDesk support policies & FAQs
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full diagram.
@@ -168,7 +168,7 @@ Thread safety via:
 
 ---
 
-## 🧪 Hackathon Constraint Compliance
+## 🧪 Design Constraint Compliance
 
 | Constraint | Status | Evidence |
 |------------|--------|----------|
@@ -183,4 +183,4 @@ Thread safety via:
 
 ## 📝 Author
 
-Built for the Ksolves Agentic AI Hackathon 2026.
+Built as a professional autonomous support resolution platform.

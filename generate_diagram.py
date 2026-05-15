@@ -46,7 +46,7 @@ draw_arrow(6.5, 3.0, 5.75, 3.0, "Result")
 
 draw_arrow(5, 2.5, 5, 1, "Log Trace")
 
-plt.title("ShopWave Autonomous Agent Architecture", fontsize=18, fontweight='bold', color=text_color, pad=20)
+plt.title("NexusDesk Autonomous Agent Architecture", fontsize=18, fontweight='bold', color=text_color, pad=20)
 plt.tight_layout()
 plt.savefig("architecture.png", dpi=300, bbox_inches='tight')
 print("Architecture PNG generated!")

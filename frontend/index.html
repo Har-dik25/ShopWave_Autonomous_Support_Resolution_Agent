@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="ShopWave Autonomous Support Command Center — AI-powered ticket resolution with real-time neural reasoning streams.">
-    <title>ShopWave — Autonomous Support Command Center</title>
+    <meta name="description" content="NexusDesk Autonomous Support Command Center — AI-powered ticket resolution with real-time neural reasoning streams.">
+    <title>NexusDesk — Autonomous Support Command Center</title>
     <!-- Premium Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,29 +20,29 @@
     <div class="grid-lines"></div>
 
     <!-- Toast Container -->
-    <div class="toast-container" id="toast-container"></div>
+    <div class="toast-container" id="toast-container" aria-live="polite" role="status"></div>
 
-    <div id="app" class="layout-wrapper">
+    <div id="app" class="layout-wrapper" role="application">
 
       <!-- Side Navigation -->
       <nav class="sidebar">
         <div class="brand">
           <div class="brand-logo">SW</div>
-          <span class="brand-name">ShopWave</span>
+          <span class="brand-name">NexusDesk</span>
         </div>
 
         <div class="nav-section">
           <p class="section-label">Operations</p>
-          <ul class="nav-list">
-            <li class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <ul class="nav-list" role="menu">
+            <li class="nav-item active" data-view="dashboard" id="nav-dashboard" role="menuitem" tabindex="0">
               <span class="nav-icon">📊</span>
               <span class="nav-text">Command Center</span>
             </li>
-            <li class="nav-item" data-view="tickets" id="nav-tickets">
+            <li class="nav-item" data-view="tickets" id="nav-tickets" role="menuitem" tabindex="0">
               <span class="nav-icon">🧬</span>
               <span class="nav-text">Resolution Hub</span>
             </li>
-            <li class="nav-item" data-view="analytics" id="nav-analytics">
+            <li class="nav-item" data-view="analytics" id="nav-analytics" role="menuitem" tabindex="0">
               <span class="nav-icon">📈</span>
               <span class="nav-text">Pulse Analytics</span>
             </li>
@@ -141,9 +141,9 @@
             <div class="panel glass-heavy flex-2">
               <div class="panel-header">
                 <h3>Neural Reasoning Stream</h3>
-                <div class="live-badge">📡 LIVE</div>
+                <div class="live-badge" aria-hidden="true">📡 LIVE</div>
               </div>
-              <div class="reasoning-stream" id="reasoning-stream">
+              <div class="reasoning-stream" id="reasoning-stream" aria-live="polite" aria-atomic="false" role="log">
                 <div class="stream-placeholder">System initialized. Awaiting sweep command...</div>
               </div>
             </div>

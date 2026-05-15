@@ -1,5 +1,5 @@
-"""
-ShopWave Autonomous Support Resolution Agent (v2)
+﻿"""
+NexusDesk Autonomous Support Resolution Agent (v2)
 ===================================================
 Pure rule-based agentic AI — NO LLM calls.
 v2 improvements:
@@ -23,11 +23,12 @@ from tools import (
     cancel_order,
     set_simulated_now,
 )
-from data_manager import get_orders_by_customer_id
+from data_manager import get_orders_by_customer_id, record_conversation, get_pending_conversations
+
 
 
 # ============================================================================
-# HELPERS — Text analysis (no LLM)
+# HELPERS — Enhanced NLP (no LLM, no external libs)
 # ============================================================================
 def _extract_order_id(text: str):
     match = re.search(r"ORD-\d+", text, re.IGNORECASE)
@@ -51,61 +52,157 @@ def _detect_social_engineering(text: str) -> bool:
     return any(re.search(kw, text.lower()) for kw in se_keywords)
 
 
-def _is_damaged_or_defective(text: str) -> bool:
-    keywords = [
-        "broken", "cracked", "damaged", "defective", "stopped working",
-        "not working", "doesn't work", "defect", "faulty", "malfunctioning",
-        "isnt working",
-    ]
-    return any(kw in text.lower() for kw in keywords)
-
-
-def _is_wrong_item(text: str) -> bool:
-    keywords = [
-        "wrong size", "wrong colour", "wrong color", "wrong item",
-        "received size", "got the black", "got the wrong",
-    ]
-    return any(kw in text.lower() for kw in keywords)
-
-
 def _customer_wants_replacement(text: str) -> bool:
     t = text.lower()
     return "replacement" in t and "not a refund" in t
 
 
-def _is_cancellation_request(text: str) -> bool:
-    return any(kw in text.lower() for kw in ["cancel", "cancellation"])
+# ── Fuzzy Matching (Levenshtein edit distance, pure Python) ──
+def _edit_distance(a: str, b: str) -> int:
+    """Compute Levenshtein distance between two strings."""
+    if len(a) < len(b):
+        return _edit_distance(b, a)
+    if len(b) == 0:
+        return len(a)
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a):
+        curr = [i + 1]
+        for j, cb in enumerate(b):
+            curr.append(min(prev[j + 1] + 1, curr[j] + 1, prev[j] + (0 if ca == cb else 1)))
+        prev = curr
+    return prev[-1]
 
 
-def _is_general_query(text: str) -> bool:
-    keywords = [
-        "what is your", "return policy", "do you offer",
-        "how long", "what's the process", "general question",
-    ]
-    return any(kw in text.lower() for kw in keywords)
+def _fuzzy_match(word: str, targets: list, max_dist: int = 2) -> bool:
+    """Check if word fuzzy-matches any target within edit distance."""
+    word = word.lower()
+    for t in targets:
+        if len(t) <= 3:  # short words need exact match
+            if word == t:
+                return True
+        elif _edit_distance(word, t) <= max_dist:
+            return True
+    return False
 
 
-def _is_status_check(text: str) -> bool:
-    keywords = [
-        "where is my order", "haven't received", "tracking",
-        "when will", "shipping status", "in transit",
-    ]
-    return any(kw in text.lower() for kw in keywords)
+def _fuzzy_keyword_score(text: str, keywords: list, synonyms: dict = None) -> int:
+    """Score text against keywords with fuzzy matching + synonym expansion."""
+    text_lower = text.lower()
+    words = re.findall(r'\b[a-z]+\b', text_lower)
+    score = 0
+
+    # Expand keywords with synonyms
+    all_keywords = list(keywords)
+    if synonyms:
+        for kw in keywords:
+            all_keywords.extend(synonyms.get(kw, []))
+
+    for kw in all_keywords:
+        if " " in kw:
+            # Multi-word phrase: exact substring match
+            if kw in text_lower:
+                score += 3
+        else:
+            # Single word: exact match (2pts) or fuzzy match (1pt)
+            if kw in words:
+                score += 2
+            elif any(_fuzzy_match(w, [kw], 2) for w in words if len(w) > 3):
+                score += 1
+    return score
 
 
-def _is_refund_status_check(text: str) -> bool:
-    keywords = [
-        "refund already", "confirm it went through",
-        "haven't seen the money", "refund status", "already done",
-    ]
-    return any(kw in text.lower() for kw in keywords)
+# ── Negation Detection ──
+_NEGATION_PATTERNS = [
+    r"\b(?:don'?t|do not|didn'?t|did not|not|no|never|won'?t|will not|can'?t|cannot)\b",
+]
+_NEGATION_WINDOW = 5  # words after negation to consider negated
 
 
-def _is_ambiguous(text: str, order_id) -> bool:
-    vague_keywords = ["thing", "stuff", "it"]
-    t = text.lower()
-    has_vague = any(kw in t for kw in vague_keywords)
-    return order_id is None and has_vague and len(t.split()) < 25
+def _has_negation_before(text: str, keyword: str) -> bool:
+    """Check if a keyword is preceded by a negation within a window."""
+    text_lower = text.lower()
+    kw_pos = text_lower.find(keyword.lower())
+    if kw_pos == -1:
+        return False
+    # Get the text before the keyword (up to 50 chars)
+    prefix = text_lower[max(0, kw_pos - 60):kw_pos]
+    words_before = prefix.split()[-_NEGATION_WINDOW:]
+    for pattern in _NEGATION_PATTERNS:
+        if any(re.search(pattern, w) for w in words_before):
+            return True
+    return False
+
+
+def _negation_adjusted_score(text: str, keywords: list, score: int) -> int:
+    """Reduce score if primary keywords are negated."""
+    negated_count = 0
+    for kw in keywords[:3]:  # check top keywords
+        if _has_negation_before(text, kw):
+            negated_count += 1
+    if negated_count > 0:
+        return max(0, score - negated_count * 2)
+    return score
+
+
+# ── Sentiment Analysis ──
+_POSITIVE_WORDS = {"thank", "thanks", "pleased", "happy", "great", "love", "excellent", "wonderful", "appreciate"}
+_NEGATIVE_WORDS = {"terrible", "horrible", "awful", "worst", "unacceptable", "ridiculous", "disgusting", "furious", "angry", "frustrated", "disappointed", "upset"}
+_URGENCY_WORDS = {"asap", "immediately", "urgent", "emergency", "right now", "today"}
+
+
+def _analyze_sentiment(text: str) -> dict:
+    """Basic sentiment analysis using keyword scoring + textual cues."""
+    text_lower = text.lower()
+    words = set(re.findall(r'\b[a-z]+\b', text_lower))
+
+    pos_count = len(words & _POSITIVE_WORDS)
+    neg_count = len(words & _NEGATIVE_WORDS)
+    urgency_count = sum(1 for uw in _URGENCY_WORDS if uw in text_lower)
+
+    # Textual frustration cues
+    exclamation_count = text.count("!")
+    caps_ratio = sum(1 for c in text if c.isupper()) / max(len(text), 1)
+    caps_frustration = caps_ratio > 0.4 and len(text) > 20
+
+    frustration_score = min(1.0, (neg_count * 0.2 + exclamation_count * 0.1 +
+                                   (0.3 if caps_frustration else 0) + urgency_count * 0.15))
+
+    if neg_count > pos_count:
+        sentiment = "negative"
+    elif pos_count > neg_count:
+        sentiment = "positive"
+    else:
+        sentiment = "neutral"
+
+    return {
+        "sentiment": sentiment,
+        "frustration_score": round(frustration_score, 2),
+        "positive_signals": pos_count,
+        "negative_signals": neg_count,
+        "urgency_signals": urgency_count,
+        "caps_frustration": caps_frustration,
+    }
+
+
+# ── Category Keywords + Synonyms ──
+_CATEGORY_KEYWORDS = {
+    "general_query": ["what is your", "return policy", "do you offer", "how long", "what's the process", "general question", "policy", "faq"],
+    "order_cancellation": ["cancel", "cancellation", "cancel order", "stop order", "void order"],
+    "order_status": ["where is my order", "haven't received", "tracking", "when will", "shipping status", "in transit", "delivery status", "order status"],
+    "refund_status": ["refund already", "confirm it went through", "haven't seen the money", "refund status", "already done", "where is my refund"],
+    "wrong_item": ["wrong size", "wrong colour", "wrong color", "wrong item", "received size", "got the black", "got the wrong", "incorrect item", "different item"],
+    "damaged_defective": ["broken", "cracked", "damaged", "defective", "stopped working", "not working", "doesn't work", "defect", "faulty", "malfunctioning", "isnt working"],
+    "refund_return": ["refund", "return", "money back", "reimburse", "send back", "return item"],
+}
+_CATEGORY_SYNONYMS = {
+    "refund": ["refnd", "refound", "reimburse", "money back"],
+    "broken": ["brokn", "borken"],
+    "damaged": ["dammaged", "damagd", "damged"],
+    "defective": ["defectve", "defetive"],
+    "cancel": ["cancle", "cancell", "cansel"],
+    "tracking": ["trackng", "trakcing"],
+    "return": ["retrun", "reutrn"],
+}
 
 
 # ============================================================================
@@ -138,7 +235,7 @@ class ReasoningChain:
 
 
 # ============================================================================
-# CLASSIFIER — pure rules (no LLM)
+# CLASSIFIER — Scoring-based, multi-label, negation-aware (no LLM)
 # ============================================================================
 def classify_ticket(ticket: dict) -> dict:
     body = ticket["body"]
@@ -152,49 +249,73 @@ def classify_ticket(ticket: dict) -> dict:
     if _detect_social_engineering(combined):
         flags.append("possible_social_engineering")
 
-    # Category
-    if _is_general_query(combined):
-        category = "general_query"
-    elif _is_cancellation_request(combined):
-        category = "order_cancellation"
-    elif _is_status_check(combined):
-        category = "order_status"
-    elif _is_refund_status_check(combined):
-        category = "refund_status"
-    elif _is_wrong_item(combined):
-        category = "wrong_item"
-    elif _is_damaged_or_defective(combined):
-        category = "replacement_request" if _customer_wants_replacement(combined) else "damaged_defective"
-    elif "refund" in combined.lower() or "return" in combined.lower():
-        category = "refund_return"
-    elif _is_ambiguous(combined, order_id):
-        category = "ambiguous"
-    else:
-        category = "general_query"
+    # ── Score every category ──
+    category_scores = {}
+    for cat, keywords in _CATEGORY_KEYWORDS.items():
+        raw_score = _fuzzy_keyword_score(combined, keywords, _CATEGORY_SYNONYMS)
+        adjusted = _negation_adjusted_score(combined, keywords, raw_score)
+        category_scores[cat] = adjusted
 
-    # Urgency
+    # ── Replacement sub-check ──
+    if _customer_wants_replacement(combined):
+        category_scores["replacement_request"] = category_scores.get("damaged_defective", 0) + 5
+
+    # ── Sort by score ──
+    ranked = sorted(category_scores.items(), key=lambda x: x[1], reverse=True)
+    top_score = ranked[0][1] if ranked else 0
+
+    # Multi-label: all categories with score >= 50% of top
+    if top_score > 0:
+        primary_category = ranked[0][0]
+        secondary_categories = [c for c, s in ranked[1:] if s > 0 and s >= top_score * 0.5]
+    else:
+        primary_category = "general_query"
+        secondary_categories = []
+
+    # ── Ambiguity check ──
+    text_lower = combined.lower()
+    vague_keywords = ["thing", "stuff", "it"]
+    has_vague = any(kw in text_lower for kw in vague_keywords)
+    if order_id is None and has_vague and len(text_lower.split()) < 25 and top_score <= 2:
+        primary_category = "ambiguous"
+
+    # ── Sentiment ──
+    sentiment = _analyze_sentiment(combined)
+
+    # ── Urgency (sentiment-influenced) ──
     tier = ticket.get("tier", 1)
     if "possible_social_engineering" in flags or "threatening_language" in flags:
         urgency = "high"
-    elif tier >= 3:
+    elif tier >= 3 or sentiment["frustration_score"] >= 0.6:
         urgency = "high"
-    elif tier == 2:
+    elif tier == 2 or sentiment["frustration_score"] >= 0.3:
         urgency = "medium"
-    elif category in ("damaged_defective", "wrong_item"):
+    elif primary_category in ("damaged_defective", "wrong_item"):
         urgency = "medium"
     else:
         urgency = "low"
 
+    # ── Dynamic Confidence ──
+    match_strength = min(1.0, top_score / 6.0) if top_score > 0 else 0.3
+    has_order = 1.0 if order_id else 0.7
+    flag_penalty = 0.1 * len(flags)
+    ambiguity_penalty = 0.3 if primary_category == "ambiguous" else 0.0
+    sentiment_clarity = 0.05 if sentiment["sentiment"] != "neutral" else 0.0
+    confidence = min(0.99, max(0.3, match_strength * 0.5 + has_order * 0.3 + sentiment_clarity - flag_penalty - ambiguity_penalty + 0.15))
+
     return {
-        "category": category,
+        "category": primary_category,
+        "secondary_categories": secondary_categories,
+        "category_scores": {c: s for c, s in ranked if s > 0},
         "urgency": urgency,
         "flags": flags,
         "order_id_extracted": order_id,
-        # Explainability: WHY each classification was made
+        "sentiment": sentiment,
+        "confidence": round(confidence, 3),
         "classification_reasoning": {
-            "category_reason": f"Detected keywords matching '{category}' pattern in subject+body.",
+            "category_reason": f"Scoring: {dict(ranked[:3])}. Primary='{primary_category}' (score={top_score}).",
             "urgency_reason": (
-                f"Tier={tier}" +
+                f"Tier={tier}, frustration={sentiment['frustration_score']}" +
                 (", threatening language detected" if "threatening_language" in flags else "") +
                 (", social engineering detected" if "possible_social_engineering" in flags else "")
             ),
@@ -203,6 +324,7 @@ def classify_ticket(ticket: dict) -> dict:
             ] if flags else ["No flags raised."],
         },
     }
+
 
 
 # ============================================================================
@@ -230,12 +352,26 @@ def resolve_ticket(ticket: dict) -> dict:
     urgency = classification["urgency"]
     flags = classification["flags"]
     order_id = classification["order_id_extracted"]
+    confidence = classification["confidence"]
     chain.step(
         f"Classified: category={category}, urgency={urgency}, flags={flags}. "
         f"Reason: {classification['classification_reasoning']['category_reason']}",
         "classify_ticket",
         f"order_id_extracted={order_id}",
     )
+
+    # ── STEP 1.5: Multi-turn Conversation Check ──
+    pending_convs = get_pending_conversations(email)
+    if pending_convs and order_id:
+        prev_ticket_id = pending_convs[-1]["ticket_id"]
+        chain.step(
+            f"Found pending conversation from ticket {prev_ticket_id}. Customer provided order ID {order_id}.",
+            "get_pending_conversations",
+            f"DECISION: Resuming multi-turn flow for {category}."
+        )
+        # If we resumed a conversation, boost confidence
+        confidence = min(0.99, confidence + 0.2)
+
 
     # ── STEP 2: Always fetch customer (TOOL CALL #1) ──
     customer_result = get_customer(email, ticket_id=ticket_id)
@@ -247,17 +383,17 @@ def resolve_ticket(ticket: dict) -> dict:
                     f"{kb_result.get('match_count', 0)} matches")
         reply = (
             f"Hello,\n\n"
-            f"Thank you for reaching out to ShopWave support.\n\n"
+            f"Thank you for reaching out to NexusDesk support.\n\n"
             f"We were unable to locate an account associated with {email}. "
             f"To help resolve your issue, please provide:\n"
             f"1. Your order ID (format: ORD-XXXX)\n"
             f"2. The email address used when placing the order\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
         # TOOL CALL #3
         send_reply(ticket_id, reply)
         chain.step("Sent reply requesting identification.", "send_reply", "Awaiting customer response.")
-        return _build_report(ticket_id, "awaiting_customer_info", category, urgency, flags, chain, confidence=0.9)
+        return _build_report(ticket_id, "awaiting_customer_info", category, urgency, flags, chain, confidence=confidence)
 
     customer = customer_result["data"]
     customer_name = customer["name"].split()[0]
@@ -288,15 +424,20 @@ def resolve_ticket(ticket: dict) -> dict:
         "refund_return": _handle_refund_return,
     }
     handler = handlers.get(category, _handle_general_query)
-    return handler(
-        ticket_id, customer_name, customer, order_id, combined, chain, category, urgency, flags
+    report = handler(
+        ticket_id, customer_name, customer, order_id, combined, chain, category, urgency, flags, confidence
     )
+    
+    # Record conversation outcome
+    record_conversation(email, ticket_id, report["resolution"])
+    
+    return report
 
 
 # ============================================================================
 # HANDLER: Social Engineering
 # ============================================================================
-def _handle_social_engineering(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_social_engineering(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     actual_tier = customer["tier"]
     claimed_premium = "premium" in text.lower() or "vip" in text.lower()
 
@@ -323,7 +464,7 @@ def _handle_social_engineering(tid, name, customer, order_id, text, chain, cat, 
 
     reply = (
         f"Hi {name},\n\n"
-        f"Thank you for contacting ShopWave support.\n\n"
+        f"Thank you for contacting NexusDesk support.\n\n"
         f"We've reviewed your account and your current membership tier is **{actual_tier.capitalize()}**. "
         f"We don't have a policy for instant or question-free refunds for any tier.\n\n"
     )
@@ -332,18 +473,18 @@ def _handle_social_engineering(tid, name, customer, order_id, text, chain, cat, 
             reply += f"Regarding order {order_id}: {elig.get('reason', 'Not eligible.')}\n\n"
     reply += (
         f"If you believe your account status is incorrect, please provide supporting documentation.\n\n"
-        f"Best regards,\nShopWave Support"
+        f"Best regards,\nNexusDesk Support"
     )
     send_reply(tid, reply)
     chain.step("Declined social engineering attempt.", "send_reply",
                "DECISION: Blocked — customer tier does not match claim and no such policy exists.")
-    return _build_report(tid, "resolved_declined", cat, urg, flags, chain, confidence=0.95)
+    return _build_report(tid, "resolved_declined", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Ambiguous
 # ============================================================================
-def _handle_ambiguous(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_ambiguous(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     # TOOL CALL #3: Look up customer's orders
     cust_orders = get_orders_by_customer_id(customer["customer_id"])
     order_list = ", ".join(o["order_id"] for o in cust_orders) if cust_orders else "none"
@@ -364,18 +505,18 @@ def _handle_ambiguous(tid, name, customer, order_id, text, chain, cat, urg, flag
     )
     if cust_orders:
         reply += f"We found these orders on your account: {order_list}. Does the issue relate to one of these?\n\n"
-    reply += "Best regards,\nShopWave Support"
+    reply += "Best regards,\nNexusDesk Support"
 
     send_reply(tid, reply)
     chain.step("Sent clarifying questions.", "send_reply",
                "DECISION: Ticket is too vague to act on. Need order ID and issue description before proceeding.")
-    return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.85)
+    return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: General Query
 # ============================================================================
-def _handle_general_query(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_general_query(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     # TOOL CALL #3: Search knowledge base
     kb = search_knowledge_base(text, ticket_id=tid)
     kb_texts = kb.get("results", [])
@@ -389,25 +530,25 @@ def _handle_general_query(tid, name, customer, order_id, text, chain, cat, urg, 
             f"Great question! Here's what you need to know:\n\n"
             f"{kb_answer}\n\n"
             f"If you have any other questions, feel free to ask!\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
     else:
         reply = (
             f"Hi {name},\n\n"
             f"Thank you for your question. I've forwarded it to our team for a detailed response. "
             f"You'll hear back within 24 hours.\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
 
     send_reply(tid, reply)
     chain.step("Sent KB-based answer.", "send_reply", "Resolved with knowledge base content.")
-    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.9)
+    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Order Status
 # ============================================================================
-def _handle_order_status(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_order_status(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     if not order_id:
         cust_orders = get_orders_by_customer_id(customer["customer_id"])
         shipped = [o for o in cust_orders if o["status"] == "shipped"]
@@ -418,19 +559,19 @@ def _handle_order_status(tid, name, customer, order_id, text, chain, cat, urg, f
             # Still need 3rd tool call
             kb = search_knowledge_base("order tracking shipping", ticket_id=tid)
             chain.step("Searched KB for tracking info.", "search_knowledge_base")
-            reply = f"Hi {name},\n\nCould you provide your order number (ORD-XXXX) so we can check status?\n\nBest regards,\nShopWave Support"
+            reply = f"Hi {name},\n\nCould you provide your order number (ORD-XXXX) so we can check status?\n\nBest regards,\nNexusDesk Support"
             send_reply(tid, reply)
             chain.step("Asked for order ID.", "send_reply")
-            return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.7)
+            return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     # TOOL CALL #3: get_order
     order_result = get_order(order_id, ticket_id=tid)
     if not order_result["success"]:
         chain.step(f"Order {order_id} not found.", "get_order", "NOT FOUND")
-        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you double-check?\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you double-check?\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked customer to verify order ID.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.6)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     order = order_result["data"]
     status = order["status"]
@@ -456,37 +597,37 @@ def _handle_order_status(tid, name, customer, order_id, text, chain, cat, urg, f
         exp_match = re.search(r"Expected delivery (\d{4}-\d{2}-\d{2})", notes)
         if exp_match:
             reply += f"📅 **Expected Delivery:** {exp_match.group(1)}\n\n"
-        reply += "If it hasn't arrived by then, reach out again and we'll investigate.\n\nBest regards,\nShopWave Support"
+        reply += "If it hasn't arrived by then, reach out again and we'll investigate.\n\nBest regards,\nNexusDesk Support"
     elif status == "delivered":
-        reply = f"Hi {name},\n\nYour order {order_id} ({product_name}) was delivered on {order.get('delivery_date', 'N/A')}.\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nYour order {order_id} ({product_name}) was delivered on {order.get('delivery_date', 'N/A')}.\n\nBest regards,\nNexusDesk Support"
     else:
-        reply = f"Hi {name},\n\nYour order {order_id} is currently being processed. You'll receive tracking once it ships.\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nYour order {order_id} is currently being processed. You'll receive tracking once it ships.\n\nBest regards,\nNexusDesk Support"
 
     send_reply(tid, reply)
     chain.step("Sent order status.", "send_reply", "Resolved.")
-    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.95)
+    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Refund Status
 # ============================================================================
-def _handle_refund_status(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_refund_status(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     if not order_id:
         kb = search_knowledge_base("refund processing time", ticket_id=tid)
         chain.step("Searched KB for refund timelines.", "search_knowledge_base")
-        reply = f"Hi {name},\n\nPlease share your order number so we can check the refund status.\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nPlease share your order number so we can check the refund status.\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked for order ID.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.7)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     # TOOL #3: get_order
     order_result = get_order(order_id, ticket_id=tid)
     if not order_result["success"]:
         chain.step(f"Order {order_id} not found.", "get_order")
-        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you double-check?\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you double-check?\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked customer to verify.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.6)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     order = order_result["data"]
     refund_status = order.get("refund_status")
@@ -503,25 +644,25 @@ def _handle_refund_status(tid, name, customer, order_id, text, chain, cat, urg, 
             f"Great news! The refund for order {order_id} has been **successfully processed**.\n\n"
             f"💰 **Refund Amount:** ${order['amount']:.2f}\n\n"
             f"Please allow **5–7 business days** for it to appear in your account.\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
     else:
         reply = (
             f"Hi {name},\n\n"
             f"We've checked order {order_id} and don't currently show a refund on record. "
             f"If you recently submitted a request, it may still be under review.\n\n"
-            f"Would you like us to check eligibility for a refund?\n\nBest regards,\nShopWave Support"
+            f"Would you like us to check eligibility for a refund?\n\nBest regards,\nNexusDesk Support"
         )
 
     send_reply(tid, reply)
     chain.step("Sent refund status.", "send_reply", "Resolved.")
-    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.95)
+    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Cancellation
 # ============================================================================
-def _handle_cancellation(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_cancellation(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     if not order_id:
         cust_orders = get_orders_by_customer_id(customer["customer_id"])
         processing = [o for o in cust_orders if o["status"] == "processing"]
@@ -531,19 +672,19 @@ def _handle_cancellation(tid, name, customer, order_id, text, chain, cat, urg, f
         else:
             kb = search_knowledge_base("order cancellation policy", ticket_id=tid)
             chain.step("Searched KB for cancellation policy.", "search_knowledge_base")
-            reply = f"Hi {name},\n\nPlease provide your order number to process the cancellation.\n\nBest regards,\nShopWave Support"
+            reply = f"Hi {name},\n\nPlease provide your order number to process the cancellation.\n\nBest regards,\nNexusDesk Support"
             send_reply(tid, reply)
             chain.step("Asked for order ID.", "send_reply")
-            return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.7)
+            return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     # TOOL: get_order
     order_result = get_order(order_id, ticket_id=tid)
     if not order_result["success"]:
         chain.step(f"Order {order_id} not found.", "get_order")
-        reply = f"Hi {name},\n\nWe couldn't find order {order_id}.\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nWe couldn't find order {order_id}.\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked to verify.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.6)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     order = order_result["data"]
     status = order["status"]
@@ -563,41 +704,41 @@ def _handle_cancellation(tid, name, customer, order_id, text, chain, cat, urg, f
             f"Hi {name},\n\n"
             f"Your order {order_id} ({product_name}) has been **successfully cancelled**. ✅\n\n"
             f"💰 Refund of **${order['amount']:.2f}** will be processed within 5–7 business days.\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
         send_reply(tid, reply)
         chain.step("Sent cancellation confirmation.", "send_reply", "Resolved.")
-        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.98)
+        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
     else:
         reply = (
             f"Hi {name},\n\n"
             f"Order {order_id} ({product_name}) has already been **{status}** and cannot be cancelled.\n\n"
-            f"Once you receive it, you can initiate a return if needed.\n\nBest regards,\nShopWave Support"
+            f"Once you receive it, you can initiate a return if needed.\n\nBest regards,\nNexusDesk Support"
         )
         send_reply(tid, reply)
         chain.step(f"Cannot cancel — status is '{status}'.", "send_reply", "Resolved (denied).")
-        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.95)
+        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Wrong Item
 # ============================================================================
-def _handle_wrong_item(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_wrong_item(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     if not order_id:
         kb = search_knowledge_base("wrong item delivered exchange", ticket_id=tid)
         chain.step("Searched KB for wrong-item policy.", "search_knowledge_base")
-        reply = f"Hi {name},\n\nPlease provide your order number so we can fix this.\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nPlease provide your order number so we can fix this.\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked for order ID.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.7)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     # TOOL: get_order
     order_result = get_order(order_id, ticket_id=tid)
     if not order_result["success"]:
-        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you double-check?\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you double-check?\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Order not found.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.5)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     order = order_result["data"]
     chain.step(f"Order {order_id}: amount=${order['amount']:.2f}, product={order['product_id']}", "get_order")
@@ -627,7 +768,7 @@ def _handle_wrong_item(tid, name, customer, order_id, text, chain, cat, urg, fla
             f"Hi {name},\n\n"
             f"We sincerely apologize for sending the wrong item. Your case has been escalated to our specialist team "
             f"who will arrange an exchange or refund. You'll hear back within 24 hours.\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
     else:
         refund_result = issue_refund(order_id, order["amount"], ticket_id=tid)
@@ -638,26 +779,26 @@ def _handle_wrong_item(tid, name, customer, order_id, text, chain, cat, urg, fla
             f"We're sorry about the mix-up with order {order_id} ({product_name}).\n\n"
             f"We've issued a **full refund of ${order['amount']:.2f}**. Allow 5–7 business days.\n\n"
             f"If you'd prefer an exchange, let us know! You don't need to return the incorrect item.\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
 
     send_reply(tid, reply)
     chain.step("Sent resolution reply.", "send_reply")
     resolution = "escalated" if order["amount"] > 200 else "resolved"
-    return _build_report(tid, resolution, cat, urg, flags, chain, confidence=0.92)
+    return _build_report(tid, resolution, cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Replacement Request
 # ============================================================================
-def _handle_replacement(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_replacement(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     if not order_id:
         kb = search_knowledge_base("replacement request damaged", ticket_id=tid)
         chain.step("Searched KB.", "search_knowledge_base")
-        reply = f"Hi {name},\n\nPlease provide your order number.\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nPlease provide your order number.\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked for order ID.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.7)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     # TOOL: get_order
     order_result = get_order(order_id, ticket_id=tid)
@@ -694,24 +835,24 @@ def _handle_replacement(tid, name, customer, order_id, text, chain, cat, urg, fl
         f"We're sorry about the issue with your {product_name} (order {order_id}).\n\n"
         f"Since you'd prefer a replacement, we've escalated to our fulfillment team. They'll review the photos "
         f"and arrange a replacement. Expect to hear back within **24-48 hours**.\n\n"
-        f"Best regards,\nShopWave Support"
+        f"Best regards,\nNexusDesk Support"
     )
     send_reply(tid, reply)
     chain.step("Sent escalation notice.", "send_reply")
-    return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=0.88)
+    return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Damaged / Defective
 # ============================================================================
-def _handle_damaged(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_damaged(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     if not order_id:
         kb = search_knowledge_base("damaged defective arrival", ticket_id=tid)
         chain.step("Searched KB for damage policy.", "search_knowledge_base")
-        reply = f"Hi {name},\n\nSorry to hear that. Please provide your order number so we can investigate.\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nSorry to hear that. Please provide your order number so we can investigate.\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked for order ID.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.7)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     # TOOL: get_order
     order_result = get_order(order_id, ticket_id=tid)
@@ -719,10 +860,10 @@ def _handle_damaged(tid, name, customer, order_id, text, chain, cat, urg, flags)
         chain.step(f"Order {order_id} not found.", "get_order")
         kb = search_knowledge_base("order lookup", ticket_id=tid)
         chain.step("Searched KB.", "search_knowledge_base")
-        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you verify?\n\nBest regards,\nShopWave Support"
+        reply = f"Hi {name},\n\nWe couldn't find order {order_id}. Could you verify?\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Asked to verify.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.5)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     order = order_result["data"]
     chain.step(f"Order {order_id}: status={order['status']}, amount=${order['amount']:.2f}", "get_order")
@@ -752,11 +893,11 @@ def _handle_damaged(tid, name, customer, order_id, text, chain, cat, urg, flags)
             f"We're sorry about your {product_name}.\n\n"
             f"While the return window has passed, your item is still under **warranty**. "
             f"We've escalated to our warranty team who will review your claim within **2-3 business days**.\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
         send_reply(tid, reply)
         chain.step("Sent warranty escalation notice.", "send_reply")
-        return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=0.9)
+        return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=conf)
 
     # Damaged on arrival — refund path
     if order["amount"] > 200:
@@ -766,11 +907,11 @@ def _handle_damaged(tid, name, customer, order_id, text, chain, cat, urg, flags)
                    "DECISION: Refund amount exceeds $200 threshold → requires supervisor approval per policy.")
         reply = (
             f"Hi {name},\n\nWe're sorry about the damaged {product_name}. Your case has been escalated for priority review. "
-            f"You'll hear back within 24 hours.\n\nBest regards,\nShopWave Support"
+            f"You'll hear back within 24 hours.\n\nBest regards,\nNexusDesk Support"
         )
         send_reply(tid, reply)
         chain.step("Sent escalation notice.", "send_reply")
-        return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=0.85)
+        return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=conf)
 
     refund_result = issue_refund(order_id, order["amount"], ticket_id=tid)
     chain.step(f"Refund issued: {refund_result.get('message')}", "issue_refund",
@@ -780,17 +921,17 @@ def _handle_damaged(tid, name, customer, order_id, text, chain, cat, urg, flags)
         f"We're sorry your {product_name} arrived damaged.\n\n"
         f"We've issued a **full refund of ${order['amount']:.2f}**. Allow 5–7 business days.\n"
         f"You do **not** need to return the damaged item.\n\n"
-        f"Best regards,\nShopWave Support"
+        f"Best regards,\nNexusDesk Support"
     )
     send_reply(tid, reply)
     chain.step("Sent refund confirmation.", "send_reply", "Resolved.")
-    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.95)
+    return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================
 # HANDLER: Refund / Return
 # ============================================================================
-def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, flags):
+def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, flags, conf=0.9):
     if not order_id:
         if "threatening_language" in flags:
             chain.step("Threatening language detected but no valid order ID.")
@@ -800,11 +941,11 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
             f"Hi {name},\n\n"
             f"{'We understand your frustration. ' if 'threatening_language' in flags else ''}"
             f"Could you please provide your order number (ORD-XXXX) so we can process your request?\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
         send_reply(tid, reply)
         chain.step("Asked for order ID.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.7)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     # TOOL: get_order
     order_result = get_order(order_id, ticket_id=tid)
@@ -816,11 +957,11 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
             f"Hi {name},\n\n"
             f"{'We understand your concern and take all issues seriously. ' if 'threatening_language' in flags else ''}"
             f"We couldn't find order {order_id}. Could you verify the order number?\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
         send_reply(tid, reply)
         chain.step("Asked customer to verify order.", "send_reply")
-        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=0.5)
+        return _build_report(tid, "awaiting_customer_info", cat, urg, flags, chain, confidence=conf)
 
     order = order_result["data"]
     chain.step(f"Order {order_id}: product={order['product_id']}, amount=${order['amount']:.2f}, status={order['status']}", "get_order")
@@ -854,13 +995,13 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
                 f"2. We'll send a prepaid return label\n"
                 f"3. Ship the item in original packaging\n"
                 f"4. Refund processed within 5–7 business days\n\n"
-                f"Just let us know when you're ready!\n\nBest regards,\nShopWave Support"
+                f"Just let us know when you're ready!\n\nBest regards,\nNexusDesk Support"
             )
         else:
-            reply = f"Hi {name},\n\nRegarding order {order_id}: {reason}\n\nBest regards,\nShopWave Support"
+            reply = f"Hi {name},\n\nRegarding order {order_id}: {reason}\n\nBest regards,\nNexusDesk Support"
         send_reply(tid, reply)
         chain.step("Sent informational reply.", "send_reply", "Resolved (informational).")
-        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.9)
+        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
     # ── Process refund ──
     if eligible:
@@ -868,10 +1009,10 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
             summary = f"Refund for {order_id} ({product_name}), ${order['amount']:.2f} > $200. Customer: {customer['name']} ({customer_tier})."
             escalate(tid, summary, "medium")
             chain.step("Escalated — amount > $200.", "escalate")
-            reply = f"Hi {name},\n\nYour return for {order_id} is eligible. Due to the order value, it's been sent for final approval. You'll hear back within 24 hours.\n\nBest regards,\nShopWave Support"
+            reply = f"Hi {name},\n\nYour return for {order_id} is eligible. Due to the order value, it's been sent for final approval. You'll hear back within 24 hours.\n\nBest regards,\nNexusDesk Support"
             send_reply(tid, reply)
             chain.step("Sent escalation notice.", "send_reply")
-            return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=0.85)
+            return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=conf)
 
         refund_result = issue_refund(order_id, order["amount"], ticket_id=tid)
         chain.step(f"Refund issued: {refund_result.get('message')}", "issue_refund",
@@ -880,11 +1021,11 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
             f"Hi {name},\n\n"
             f"Your refund for order {order_id} ({product_name}) has been approved! ✅\n\n"
             f"💰 **Refund:** ${order['amount']:.2f}\n📅 **Expected:** 5–7 business days\n\n"
-            f"Best regards,\nShopWave Support"
+            f"Best regards,\nNexusDesk Support"
         )
         send_reply(tid, reply)
         chain.step("Sent refund confirmation.", "send_reply", "Resolved.")
-        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.95)
+        return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
     # ── Not eligible — check VIP/Premium exceptions ──
     if customer_tier == "vip" and ("pre-approved" in customer_notes.lower() or "exception" in customer_notes.lower()):
@@ -894,10 +1035,10 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
             summary = f"VIP exception refund: {order_id}, ${order['amount']:.2f}. Pre-approved extended return."
             escalate(tid, summary, "medium")
             chain.step("Escalated VIP exception — high value.", "escalate")
-            reply = f"Hi {name},\n\nAs a valued VIP member, your return for {order_id} has been approved under your extended return privilege. Sent for final processing.\n\nBest regards,\nShopWave Support"
+            reply = f"Hi {name},\n\nAs a valued VIP member, your return for {order_id} has been approved under your extended return privilege. Sent for final processing.\n\nBest regards,\nNexusDesk Support"
             send_reply(tid, reply)
             chain.step("Sent VIP approval.", "send_reply")
-            return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=0.88)
+            return _build_report(tid, "escalated", cat, urg, flags, chain, confidence=conf)
         else:
             refund_result = issue_refund(order_id, order["amount"], ticket_id=tid)
             chain.step(f"VIP exception refund: {refund_result.get('message')}", "issue_refund",
@@ -907,11 +1048,11 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
                 f"As a valued VIP member, we've approved your return for order {order_id} ({product_name}) "
                 f"under your extended return privilege. ✅\n\n"
                 f"💰 **Refund:** ${order['amount']:.2f}\n📅 **Expected:** 5–7 business days\n\n"
-                f"Thank you for being a loyal ShopWave customer!\n\nBest regards,\nShopWave Support"
+                f"Thank you for being a loyal NexusDesk customer!\n\nBest regards,\nNexusDesk Support"
             )
             send_reply(tid, reply)
             chain.step("Sent VIP refund confirmation.", "send_reply", "Resolved.")
-            return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=0.92)
+            return _build_report(tid, "resolved", cat, urg, flags, chain, confidence=conf)
 
     # ── Standard decline ──
     reply = f"Hi {name},\n\nWe've reviewed your request for order {order_id} ({product_name}).\n\nUnfortunately, {reason.lower()}\n\n"
@@ -919,12 +1060,12 @@ def _handle_refund_return(tid, name, customer, order_id, text, chain, cat, urg, 
         reply += "Additionally, the device was registered online, making it non-returnable per our policy.\n\n"
     if elig.get("warranty_active"):
         reply += "However, your item may still be under warranty. Let us know if you'd like to open a warranty claim.\n\n"
-    reply += "Best regards,\nShopWave Support"
+    reply += "Best regards,\nNexusDesk Support"
 
     send_reply(tid, reply)
     chain.step("Declined refund — outside policy.", "send_reply",
                f"DECISION: Not eligible ({reason}). No VIP/Premium exceptions apply.")
-    return _build_report(tid, "resolved_declined", cat, urg, flags, chain, confidence=0.9)
+    return _build_report(tid, "resolved_declined", cat, urg, flags, chain, confidence=conf)
 
 
 # ============================================================================

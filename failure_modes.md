@@ -1,6 +1,6 @@
 # 🔴 Failure Mode Analysis
 
-This document describes **6 realistic failure scenarios** simulated in the ShopWave agent, how each is triggered, what the system observes, and how it recovers.
+This document describes **6 realistic failure scenarios** simulated in the NexusDesk agent, how each is triggered, what the system observes, and how it recovers.
 
 ---
 
